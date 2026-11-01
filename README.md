@@ -1,6 +1,24 @@
 # dexcup — G1 Dex3-1 cup-to-coaster with teacher/student routing
 
-## Setup on Linux
+## Machines
+
+- **Windows laptop (local):** sim, recordings, tracking, retargeting, replay (stages 1–5).
+- **Linux cloud GPU:** training and evaluation (stages 6–9). Processed `.npz` demos move between them
+  outside git.
+
+## Setup on Windows (local)
+
+```bash
+# Robot model: sparse clone of just the G1 (~56 MB) into %USERPROFILE%\mujoco_menagerie
+git clone --depth 1 --filter=blob:none --sparse https://github.com/google-deepmind/mujoco_menagerie.git ~/mujoco_menagerie
+git -C ~/mujoco_menagerie sparse-checkout set unitree_g1
+pip install -r requirements.txt
+python test_g1_grasp.py         # should end with SUCCESS=True
+```
+
+No `MUJOCO_GL` setting is needed on Windows; MuJoCo uses the native OpenGL driver.
+
+## Setup on Linux (cloud)
 
 ```bash
 # 1. Python env (3.10–3.12)
