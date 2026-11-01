@@ -1,0 +1,7 @@
+mujoco>=3.2
+numpy
+pillow
+imageio
+imageio-ffmpeg
+# training (later stages); on Apple Silicon this includes the MPS GPU backend
+torch
