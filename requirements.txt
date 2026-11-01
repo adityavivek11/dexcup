@@ -3,5 +3,6 @@ numpy
 pillow
 imageio
 imageio-ffmpeg
+opencv-python>=4.8   # aruco (AprilTag 36h11) detection, calibration, video decoding
 # training (later stages); on Apple Silicon this includes the MPS GPU backend
 torch
