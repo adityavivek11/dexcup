@@ -34,8 +34,13 @@ ARM_NOMINAL = [-0.8, -0.3, 0.3, 1.2, 0.0, 0.0, 0.0]
 READY_PALM = [0.10, -0.25, 0.95]   # hand above the table, close to the body, fingers forward
 
 TABLE_TOP = 0.78
-CUP_START = np.array([0.32, -0.20, TABLE_TOP + 0.045])     # right of centre, within right-arm reach
-COASTER = np.array([0.32, 0.00, TABLE_TOP + 0.004])        # 20 cm to the left, in front of the body
+# Real objects (measured 2 Nov): cardboard tube 9.4 cm diameter x 17.8 cm tall; "coaster" = tape roll
+# 9 cm diameter x 2 cm tall. The tube (radius 4.7) is wider than the roll (4.5), so it rests ON the roll:
+# the roll is a solid, collidable step here, not a flat visual-only disc as in the 7 cm test cup.
+CUP_RADIUS, CUP_HALF_H, CUP_MASS = 0.047, 0.089, 0.15    # mass not measured: light tube + small object
+COASTER_RADIUS, COASTER_HALF_H = 0.045, 0.010
+CUP_START = np.array([0.32, -0.20, TABLE_TOP + CUP_HALF_H])  # right of centre, within right-arm reach
+COASTER = np.array([0.32, 0.00, TABLE_TOP + COASTER_HALF_H])  # 20 cm to the left, in front of the body
 
 
 def build():
@@ -79,13 +84,13 @@ def build():
 
     cup = w.add_body(name="cup", pos=CUP_START.tolist())
     cup.add_freejoint(name="cup_free")
-    cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[0.035, 0.045],
-                 mass=0.12, friction=[1.0, 0.01, 0.001], rgba=[.9, .9, .95, 1])
+    cup.add_geom(name="cup_geom", type=mujoco.mjtGeom.mjGEOM_CYLINDER, size=[CUP_RADIUS, CUP_HALF_H],
+                 mass=CUP_MASS, friction=[1.0, 0.01, 0.001], rgba=[.85, .75, .55, 1])
     cup.add_site(name="cup_center", size=[0.005])
 
     w.add_geom(name="coaster", type=mujoco.mjtGeom.mjGEOM_CYLINDER, pos=COASTER.tolist(),
-               size=[0.05, 0.002], rgba=[.2, .5, .3, 1], contype=0, conaffinity=0)
-    w.add_site(name="coaster_center", pos=(COASTER + [0, 0, 0.002]).tolist(), size=[0.005])
+               size=[COASTER_RADIUS, COASTER_HALF_H], rgba=[.9, .85, .6, 1])
+    w.add_site(name="coaster_center", pos=(COASTER + [0, 0, COASTER_HALF_H]).tolist(), size=[0.005])
 
     # Egocentric camera where the G1's head sensor sits (~1.27 m), pitched ~50 deg down at the table.
     # MuJoCo cameras look along local -z, with image-right = local x and image-up = local y.

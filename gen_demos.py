@@ -45,7 +45,7 @@ def run_episode(seed: int):
         if np.linalg.norm(coaster[:2] - cup0[:2]) > 0.12:
             break
     m.geom_pos[m.geom("coaster").id] = coaster
-    m.site_pos[m.site("coaster_center").id] = coaster + [0, 0, 0.002]
+    m.site_pos[m.site("coaster_center").id] = coaster + [0, 0, T.COASTER_HALF_H]
     reset_ready(m, d, T.STAND, ik)
     cup_adr = m.joint("cup_free").qposadr[0]
     d.qpos[cup_adr:cup_adr + 7] = [*cup0, 1, 0, 0, 0]
@@ -53,7 +53,7 @@ def run_episode(seed: int):
 
     off = T.OFF + rng.uniform(-0.004, 0.004, 3)     # imperfect grasp placement, like a human's
     speed = rng.uniform(0.85, 1.15)
-    on_coaster = np.array([coaster[0], coaster[1], z])
+    on_coaster = np.array([coaster[0], coaster[1], z + 2 * T.COASTER_HALF_H])   # resting on the tape roll
     C = T.CLEAR
     wps = [("approach_above", cup0 + off + C + [0, 0, 0.12], False, 1.2),
            ("approach_down",  cup0 + off + C,                False, 1.0),

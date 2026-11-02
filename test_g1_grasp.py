@@ -13,7 +13,7 @@ continuous branch instead of flipping elbow configurations.
 import os
 import mujoco
 import numpy as np
-from build_g1_scene import make, CUP_START, COASTER, RIGHT_ARM
+from build_g1_scene import make, CUP_START, COASTER, RIGHT_ARM, COASTER_HALF_H
 from contacts import GraspChecker
 from ik import ArmIK, reset_ready
 
@@ -33,34 +33,46 @@ FINGERS_CLOSE = {**FINGERS_OPEN, "right_hand_index_0_joint": 1.2, "right_hand_in
                  "right_hand_middle_0_joint": 1.2, "right_hand_middle_1_joint": 1.3,
                  "right_hand_thumb_2_joint": -1.3}
 HAND_QUAT = np.array([1.0, 0, 0, 0])            # fingers forward (+x), hand closes toward +y
-OFF = np.array([-0.104, -0.05, 0.0])            # palm relative to cup centre (worked in the v1 test)
-CUP_ON_COASTER = np.array([COASTER[0], COASTER[1], CUP_START[2]])
+# Palm relative to cup centre, for the 9.4 cm tube. Swept 2 Nov: success for x in [-0.135,-0.125] and
+# y in [-0.075,-0.05]; x=-0.145 holds but fails the place, x<=-0.115 knocks the tube. Centre of the region.
+# (The 7 cm test cup used (-0.104,-0.05).) The x window is only ~1 cm wide: retargeted human demos will
+# need the +-1 cm repair step.
+OFF = np.array([-0.13, -0.0625, 0.0])
+# Resting on the tape roll, the cup centre sits one roll-height higher than on the table.
+CUP_ON_COASTER = np.array([COASTER[0], COASTER[1], CUP_START[2] + 2 * COASTER_HALF_H])
 
-CLEAR = np.array([0, -0.02, 0])                 # descend 2 cm away from the cup, then slide in
-WAYPOINTS = [  # (phase, palm target in world, fingers closed?, seconds)
-    # Come down BESIDE the cup with clearance, then slide in sideways (like a person does).
-    # Descending straight onto the grasp pose put the open thumb on the rim and blocked the arm.
-    ("approach_above", CUP_START + OFF + CLEAR + [0, 0, 0.12], False, 1.2),
-    ("approach_down",  CUP_START + OFF + CLEAR,                False, 1.0),
-    ("slide_in",       CUP_START + OFF,                        False, 0.8),
-    ("grasp",          CUP_START + OFF,                        True,  0.8),
-    ("lift",           CUP_START + OFF + [0, 0, 0.09],         True,  0.8),
-    ("transport",      CUP_ON_COASTER + OFF + [0, 0, 0.09],    True,  1.5),
-    ("place",          CUP_ON_COASTER + OFF + [0, 0, 0.005],   True,  1.0),
-    ("release",        CUP_ON_COASTER + OFF + [0, 0, 0.005],   False, 0.6),
-    ("back_off",       CUP_ON_COASTER + OFF + CLEAR + [0, 0, 0.005], False, 0.6),
-    ("retreat",        CUP_ON_COASTER + OFF + CLEAR + [0, 0, 0.12],  False, 0.8),
-]
+CLEAR = np.array([0, -0.03, 0])                 # descend 3 cm away from the cup, then slide in
 
 
-def run(verbose=True, record=False):
+def waypoints(off=OFF, clear=CLEAR):
+    """(phase, palm target in world, fingers closed?, seconds). A function so offsets can be swept."""
+    return [
+        # Come down BESIDE the cup with clearance, then slide in sideways (like a person does).
+        # Descending straight onto the grasp pose put the open thumb on the rim and blocked the arm.
+        ("approach_above", CUP_START + off + clear + [0, 0, 0.12], False, 1.2),
+        ("approach_down",  CUP_START + off + clear,                False, 1.0),
+        ("slide_in",       CUP_START + off,                        False, 0.8),
+        ("grasp",          CUP_START + off,                        True,  0.8),
+        ("lift",           CUP_START + off + [0, 0, 0.09],         True,  0.8),
+        ("transport",      CUP_ON_COASTER + off + [0, 0, 0.09],    True,  1.5),
+        ("place",          CUP_ON_COASTER + off + [0, 0, 0.005],   True,  1.0),
+        ("release",        CUP_ON_COASTER + off + [0, 0, 0.005],   False, 0.6),
+        ("back_off",       CUP_ON_COASTER + off + clear + [0, 0, 0.005], False, 0.6),
+        ("retreat",        CUP_ON_COASTER + off + clear + [0, 0, 0.12],  False, 0.8),
+    ]
+
+
+WAYPOINTS = waypoints()
+
+
+def run(verbose=True, record=False, off=OFF):
     # Start in the 'ready' pose (hand raised above the table). Starting from the hanging-arm stand pose
     # swept the fingers through the table edge and the hip on the way up.
     reset_ready(m, d, STAND, ik)
     frames, log = [], []
     renderer = mujoco.Renderer(m, 240, 320) if record else None
     cur = d.site("palm_center").xpos.copy()
-    for phase, target, closed, secs in WAYPOINTS:
+    for phase, target, closed, secs in waypoints(off):
         start, ticks = cur.copy(), int(secs / CTRL_DT)
         for k in range(ticks):
             a = min(1.0, k / (0.7 * ticks))

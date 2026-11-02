@@ -3,6 +3,7 @@ numpy
 pillow
 imageio
 imageio-ffmpeg
-opencv-python>=4.8   # aruco (AprilTag 36h11) detection, calibration, video decoding
+opencv-python>=4.8   # calibration, PnP, video decoding
+pupil-apriltags      # AprilTag detection (more robust than cv2.aruco on the wrist tag)
 # training (later stages); on Apple Silicon this includes the MPS GPU backend
 torch

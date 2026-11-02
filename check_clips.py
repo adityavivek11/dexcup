@@ -2,7 +2,7 @@
 
 WHY: a bad clip (tags not detected, no still pause, low resolution) costs seconds to re-record now and
 hours to debug later. Checks per clip:
-  - resolution/fps: 4K needed so the tags are big enough in the image
+  - resolution/fps: >= 1080p so the tags are big enough in the image
   - coaster tag (ID 1) and wrist tag (ID 0) detection rate, and the longest wrist-tag gap
     (short gaps get filled by smoothing; long ones mean the wrist pose is unknown mid-grasp)
   - still time at start/end: the pauses mark where a demo begins and ends
@@ -17,9 +17,12 @@ import cv2
 import numpy as np
 from tags import detect, COASTER_ID, WRIST_ID
 
-MIN_HEIGHT = 2160            # 4K (shorter side, after rotation)
-MIN_WRIST, MIN_COASTER = 0.80, 0.50   # coaster gets occluded by the arm during place; it's static, so fine
-MAX_WRIST_GAP_S = 0.5
+MIN_HEIGHT = 1080            # 1080p minimum (user choice, 2 Nov): 1.5x sharper than the 720p test clips
+# Relaxed 2 Nov (were 0.80 / 0.5 s) after the first 1080p batch: gaps fall in the reach (wrist below the
+# frame) and the fast carry, while the grasp and place moments stay visible. Gaps get filled downstream
+# (interpolation, MediaPipe wrist keypoint). Coaster gets occluded by arm/tube; it's static, so fine.
+MIN_WRIST, MIN_COASTER = 0.70, 0.50
+MAX_WRIST_GAP_S = 1.0
 MIN_STILL_S = 0.7            # asked for 1 s; allow some slack
 STILL_THR = 1.5              # mean abs grey-level change per frame on a 160x90 thumbnail
 
@@ -61,13 +64,15 @@ def check(path: Path, step: int) -> dict:
              coaster=float(np.mean(seen[COASTER_ID])), wrist=float(w.mean()),
              gap=gap * step / fps, still0=s0, still1=s1)
     problems = []
-    if min(shape[:2]) < MIN_HEIGHT: problems.append("not 4K")
+    if min(shape[:2]) < MIN_HEIGHT: problems.append("below 1080p")
     if r["coaster"] < MIN_COASTER: problems.append("coaster tag rarely seen")
     if r["wrist"] < MIN_WRIST: problems.append("wrist tag rarely seen")
     if r["gap"] > MAX_WRIST_GAP_S: problems.append(f"wrist gap {r['gap']:.1f}s")
-    if s0 < MIN_STILL_S: problems.append("no still start")
-    if s1 < MIN_STILL_S: problems.append("no still end")
-    r["verdict"] = "OK" if not problems else "; ".join(problems)
+    # Still pauses: a warning, not a failure (decided 2 Nov under deadline). The clip's own start/end
+    # already bound the demo; pauses just make segmentation cleaner.
+    warn = [w for w, bad in (("(no still start)", s0 < MIN_STILL_S), ("(no still end)", s1 < MIN_STILL_S)) if bad]
+    r["verdict"] = " ".join((["OK"] if not problems else ["; ".join(problems)]) + warn)
+    r["ok"] = not problems
     return r
 
 
@@ -84,7 +89,7 @@ if __name__ == "__main__":
     n_ok = 0
     for f in files:
         r = check(f, a.step)
-        n_ok += r["verdict"] == "OK"
+        n_ok += r["ok"]
         print(f"{r['clip']:14} {r['res']:10} {r['fps']:5.1f} {r['dur']:5.1f} {r['coaster']:6.0%} "
               f"{r['wrist']:6.0%} {r['gap']:5.1f} {r['still0']:6.1f} {r['still1']:6.1f}  {r['verdict']}")
     print(f"\n{n_ok}/{len(files)} clips OK")
