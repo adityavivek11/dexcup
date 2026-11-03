@@ -23,25 +23,29 @@ SUBSTEPS = int(round(CTRL_DT / m.opt.timestep))
 ik = ArmIK(m)
 gc = GraspChecker(m)
 ARM_ACT = [m.actuator(j).id for j in RIGHT_ARM]
-# ALL 7 finger joints are commanded explicitly in both states. Leaving any out means it inherits the
+# ALL finger motors are commanded explicitly in both states. Leaving any out means it inherits the
 # reset pose: G1's 'stand' curls thumb_1 to -1.05, which parked the thumb inside the grasp space.
-FINGER_JOINTS = ["right_hand_thumb_0_joint", "right_hand_thumb_1_joint", "right_hand_thumb_2_joint",
-                 "right_hand_index_0_joint", "right_hand_index_1_joint",
-                 "right_hand_middle_0_joint", "right_hand_middle_1_joint"]
-FINGERS_OPEN = dict.fromkeys(FINGER_JOINTS, 0.0)
-FINGERS_CLOSE = {**FINGERS_OPEN, "right_hand_index_0_joint": 1.2, "right_hand_index_1_joint": 1.3,
-                 "right_hand_middle_0_joint": 1.2, "right_hand_middle_1_joint": 1.3,
-                 "right_hand_thumb_2_joint": -1.3}
+# Hand-specific values live in hands.py (Dex3-1 or Inspire, chosen by paths.HAND).
+import hands as Hd
+FINGER_JOINTS, FINGER_ACTS = Hd.FINGER_JOINTS, Hd.FINGER_ACTS
+# Targets per joint: motors from hands.OPEN/CLOSE; a coupled joint in FINGER_JOINTS (Inspire thumb
+# intermediate = 1.6 x thumb pitch) gets the angle its motor's target implies, so the recorded 7-value
+# finger action has the same layout for both hands.
+_COUPLED = {"R_thumb_intermediate_joint": ("R_thumb_proximal_pitch_joint", 1.6)}
+_full = lambda t: {**t, **{j: t[p] * k for j, (p, k) in _COUPLED.items() if j in FINGER_JOINTS}}
+FINGERS_OPEN, FINGERS_CLOSE = _full(Hd.OPEN), _full(Hd.CLOSE)
 HAND_QUAT = np.array([1.0, 0, 0, 0])            # fingers forward (+x), hand closes toward +y
 # Palm relative to cup centre, for the 9.4 cm tube. Swept 2 Nov: success for x in [-0.135,-0.125] and
 # y in [-0.075,-0.05]; x=-0.145 holds but fails the place, x<=-0.115 knocks the tube. Centre of the region.
 # (The 7 cm test cup used (-0.104,-0.05).) The x window is only ~1 cm wide: retargeted human demos will
 # need the +-1 cm repair step.
-OFF = np.array([-0.13, -0.0625, 0.0])
+OFF = Hd.OFF
 # Resting on the tape roll, the cup centre sits one roll-height higher than on the table.
 CUP_ON_COASTER = np.array([COASTER[0], COASTER[1], CUP_START[2] + 2 * COASTER_HALF_H])
 
-CLEAR = np.array([0, -0.03, 0])                 # descend 3 cm away from the cup, then slide in
+BACK = Hd.BACK                                  # sideways back-off after the release
+UP = Hd.UP                                      # approach / retreat height above the grasp point
+CLEAR = Hd.CLEAR                                # descend beside the cup (3 cm away), then slide in
 
 
 def waypoints(off=OFF, clear=CLEAR):
@@ -49,7 +53,7 @@ def waypoints(off=OFF, clear=CLEAR):
     return [
         # Come down BESIDE the cup with clearance, then slide in sideways (like a person does).
         # Descending straight onto the grasp pose put the open thumb on the rim and blocked the arm.
-        ("approach_above", CUP_START + off + clear + [0, 0, 0.12], False, 1.2),
+        ("approach_above", CUP_START + off + clear + [0, 0, UP], False, 1.2),
         ("approach_down",  CUP_START + off + clear,                False, 1.0),
         ("slide_in",       CUP_START + off,                        False, 0.8),
         ("grasp",          CUP_START + off,                        True,  0.8),
@@ -57,8 +61,8 @@ def waypoints(off=OFF, clear=CLEAR):
         ("transport",      CUP_ON_COASTER + off + [0, 0, 0.09],    True,  1.5),
         ("place",          CUP_ON_COASTER + off + [0, 0, 0.005],   True,  1.0),
         ("release",        CUP_ON_COASTER + off + [0, 0, 0.005],   False, 0.6),
-        ("back_off",       CUP_ON_COASTER + off + clear + [0, 0, 0.005], False, 0.6),
-        ("retreat",        CUP_ON_COASTER + off + clear + [0, 0, 0.12],  False, 0.8),
+        ("back_off",       CUP_ON_COASTER + off + BACK + [0, 0, 0.005], False, 0.6),
+        ("retreat",        CUP_ON_COASTER + off + BACK + [0, 0, UP],    False, 0.8),
     ]
 
 
@@ -80,8 +84,8 @@ def run(verbose=True, record=False, off=OFF):
             cur = start + a * (np.asarray(target) - start)
             arm_q, _, _ = ik.solve(d.qpos, cur, HAND_QUAT, iters=30)
             d.ctrl[ARM_ACT] = arm_q
-            for j, q in (FINGERS_CLOSE if closed else FINGERS_OPEN).items():
-                d.ctrl[m.actuator(j).id] = q
+            for j in FINGER_ACTS:
+                d.ctrl[m.actuator(j).id] = (FINGERS_CLOSE if closed else FINGERS_OPEN)[j]
             mujoco.mj_step(m, d, nstep=SUBSTEPS)
             if record and k % 2 == 0:
                 renderer.update_scene(d, "ego"); ego = renderer.render()

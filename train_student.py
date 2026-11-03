@@ -40,6 +40,8 @@ import torch
 from policy import split, load_set, Norm, Student, action_loss
 
 ROOT = Path(__file__).parent
+from paths import MODELS, RESULTS
+from hands import GRIP_THRESHOLD        # per-hand grip threshold (labels use the executed decision)
 
 
 def fit_student(X, Y, epochs=60, seed=0, cfg=None, norm=None):
@@ -72,7 +74,7 @@ def _router_rollout(args):
     from policy import ref_point, obs_dim
     load = lambda f: torch.load(f, weights_only=False)
     env = Env()
-    router = RouterAgent(load(teacher_path), load(student_path), mode="router", phase=load(ROOT / "models" / "phase.pt"))
+    router = RouterAgent(load(teacher_path), load(student_path), mode="router", phase=load(MODELS / "phase.pt"))
     labeler = TeacherAgent(load(teacher_path))               # separate copy: its buffer doesn't disturb the router's
     env.reset(np.array(cup), np.array(co)); router.reset(); labeler.reset()
     obs, lab, status = [], [], None
@@ -84,8 +86,8 @@ def _router_rollout(args):
         if router.teacher_calls == n0:                       # student drove this tick -> keep a labelled sample
             c_tgt, c_grip = labeler.last_chunk
             obs.append(o[:obs_dim(s_cfg)])
-            lab.append(np.c_[c_tgt - ref_point(o[:31], palm, s_cfg["frame"])[0], (c_grip > 0.5).astype(np.float32)])
-        env.step(tgt, grip > 0.5)
+            lab.append(np.c_[c_tgt - ref_point(o[:31], palm, s_cfg["frame"])[0], (c_grip > GRIP_THRESHOLD).astype(np.float32)])
+        env.step(tgt, grip > GRIP_THRESHOLD)
         status = env.status()
         if status:
             break
@@ -112,12 +114,12 @@ def _rollout(args):
         from policy import ref_point, obs_dim                # label = teacher's raw chunk, in the student's recipe
         obs.append(o[:obs_dim(s_cfg)])
         c_tgt, c_grip = teacher.last_chunk
-        lab.append(np.c_[c_tgt - ref_point(o[:31], palm, s_cfg["frame"])[0], (c_grip > 0.5).astype(np.float32)])
+        lab.append(np.c_[c_tgt - ref_point(o[:31], palm, s_cfg["frame"])[0], (c_grip > GRIP_THRESHOLD).astype(np.float32)])
         if student is None or rng.random() < beta:
             tgt, grip = t_tgt, t_grip
         else:
             tgt, grip = student(o, palm, t)
-        env.step(tgt, grip > 0.5)
+        env.step(tgt, grip > GRIP_THRESHOLD)
         status = env.status()
         if status:
             break
@@ -130,7 +132,7 @@ def main():
     ap.add_argument("--rounds", type=int, default=4)
     ap.add_argument("--rollouts", type=int, default=24)
     ap.add_argument("--workers", type=int, default=6)
-    ap.add_argument("--teacher", default=str(ROOT / "models" / "teacher.pt"))
+    ap.add_argument("--teacher", default=str(MODELS / "teacher.pt"))
     ap.add_argument("--router", action="store_true", help="DAgger inside the router (see module doc)")
     a = ap.parse_args()
     train, _ = split()
@@ -143,8 +145,8 @@ def main():
     Y = np.concatenate([chunk_targets(act, r, H) for act, r in zip(A, refs)])
     norm = (X.mean(0), X.std(0))                             # fixed for all rounds (see module docstring)
     layouts = [(np.load(p)["cup_pos"][0, :2].tolist(), np.load(p)["coaster_pos"][0, :2].tolist()) for p in train]
-    (ROOT / "models").mkdir(exist_ok=True)
-    path = ROOT / "models" / "student.pt"
+    MODELS.mkdir(parents=True, exist_ok=True)
+    path = MODELS / "student.pt"
     t0 = time.time()
     if a.router:
         return router_dagger(a, X, Y, norm, cfg, layouts, path, t0)
@@ -166,8 +168,8 @@ def main():
         log.append(dict(round=k, beta=beta, rollout_success=float(succ), samples=int(len(X))))
         print(f"round {k}: beta={beta:.3f}  mixed-rollout success {succ:.0%}  dataset {len(X)}  "
               f"{time.time()-t0:.0f}s", flush=True)
-    (ROOT / "results").mkdir(exist_ok=True)
-    (ROOT / "results" / "dagger_log.json").write_text(json.dumps(log, indent=1))
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    (RESULTS / "dagger_log.json").write_text(json.dumps(log, indent=1))
     print(f"student params {sum(p.numel() for p in model.parameters())/1e3:.1f}k -> {path}")
 
 
@@ -177,8 +179,8 @@ def router_dagger(a, X, Y, norm, cfg, layouts, path, t0):
     from eval_policy import layouts as eval_layouts
     # Checkpoint after EVERY round (aggregated data + log + student): the laptop shut down mid-run on 3 Nov
     # and the in-memory dataset was lost. A rerun with the same flags resumes after the last finished round.
-    ck = ROOT / "results" / "router_dagger_ckpt.npz"
-    (ROOT / "results").mkdir(exist_ok=True)
+    ck = RESULTS / "router_dagger_ckpt.npz"
+    RESULTS.mkdir(parents=True, exist_ok=True)
     start, log = 1, []
     if ck.exists():
         c = np.load(ck, allow_pickle=True)
@@ -197,12 +199,15 @@ def router_dagger(a, X, Y, norm, cfg, layouts, path, t0):
         succ = float(np.mean([r[2] for r in res]))
         model = fit_student(X, Y, seed=k, cfg=cfg, norm=norm)
         torch.save(model, path)
+        # keep every round's student: the best round is chosen afterwards on fresh layouts (seed 2000), and
+        # on 3 Nov an overwritten 81% student was lost because only the latest one was kept
+        torch.save(model, path.with_name(f"student_router_r{k}.pt"))
         log.append(dict(round=k, router_rollout_success=succ, samples=int(len(X))))
         np.savez(ck, X=X, Y=Y, round=k, log=np.array(log, dtype=object))
         print(f"router round {k}: router-rollout success {succ:.0%} (student used in that round = previous)  "
               f"dataset {len(X)}  {time.time()-t0:.0f}s", flush=True)
-    (ROOT / "results").mkdir(exist_ok=True)
-    (ROOT / "results" / "dagger_router_log.json").write_text(json.dumps(log, indent=1))
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    (RESULTS / "dagger_router_log.json").write_text(json.dumps(log, indent=1))
     print(f"student params {sum(p.numel() for p in model.parameters())/1e3:.1f}k -> {path}")
 
 

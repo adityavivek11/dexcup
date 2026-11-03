@@ -11,6 +11,7 @@ import torch
 
 ROOT = Path(__file__).parent
 T_MAX = 1000                  # ticks = 20 s (longest successful demo: 19.4 s)
+from hands import GRIP_THRESHOLD   # per-hand grip decision threshold (hands.py)
 HOLD_OK = 50                  # success once the tube sits on the coaster, upright, released, for 1 s
 
 
@@ -22,9 +23,9 @@ class Env:
         m = self.m
         self.cup = m.joint("cup_free").qposadr[0]
         self.fq = [m.joint(j).qposadr[0] for j in T.FINGER_JOINTS]
-        self.close = np.array([T.FINGERS_CLOSE[j] for j in T.FINGER_JOINTS])
-        self.open = np.array([T.FINGERS_OPEN[j] for j in T.FINGER_JOINTS])
-        self.f_act = [m.actuator(j).id for j in T.FINGER_JOINTS]
+        self.close = np.array([T.FINGERS_CLOSE[j] for j in T.FINGER_ACTS])     # motors (hands.py)
+        self.open = np.array([T.FINGERS_OPEN[j] for j in T.FINGER_ACTS])
+        self.f_act = [m.actuator(j).id for j in T.FINGER_ACTS]
         self.arm_dof = [m.joint(j).dofadr[0] for j in T.RIGHT_ARM]
 
     def reset(self, cup_xy, coaster_xy):
@@ -142,7 +143,7 @@ def rollout(env, agent, cup_xy, coaster_xy, record=False):
         ms.append((time.perf_counter() - t0) * 1000)
         if record:
             log.append((o, target, grip))
-        env.step(target, grip > 0.5)
+        env.step(target, grip > GRIP_THRESHOLD)
         status = env.status()
         if status:
             break

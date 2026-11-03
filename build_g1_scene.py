@@ -107,22 +107,106 @@ def build():
     spec.body("torso_link").add_camera(name="ego", pos=head_pos, quat=q, fovy=70)
     spec.body("torso_link").add_site(name="head", pos=head_pos, size=[0.01], rgba=[0, 1, 1, 1])
 
-    # Fingertip and palm sites (same offsets as v1; measured from the collision meshes).
+    spec.body("right_wrist_yaw_link").add_site(name="palm_center", size=[0.006], rgba=[.2, .2, 1, 1])
+    from paths import HAND
+    if HAND == "inspire":
+        _swap_right_hand_to_inspire(spec)
+        return spec, stand_qpos
+
+    # Fingertip sites (same offsets as v1; measured from the collision meshes).
     tips = {"right_hand_thumb_2_link": [-0.003, 0.048, -0.002],
             "right_hand_index_1_link": [0.048, -0.003, 0.002],
             "right_hand_middle_1_link": [0.048, -0.003, 0.002]}
     for link, off in tips.items():
         spec.body(link).add_site(name=link.replace("right_hand_", "").replace("_link", "_tip"),
                                  pos=off, size=[0.006], rgba=[1, .2, .2, 1])
-    spec.body("right_wrist_yaw_link").add_site(name="palm_center", size=[0.006], rgba=[.2, .2, 1, 1])
-
     return spec, stand_qpos
+
+
+INSPIRE = Path.home() / "unitree_ros_g1"     # from unitreerobotics/unitree_ros robots/g1_description (3 Nov)
+# The 6 motors of the Inspire RH56DFQ. Each finger's second joint is coupled to its first by the URDF's
+# <mimic> tags, which MuJoCo's URDF importer turns into joint equality constraints (thumb: 1.6x and 2.4x).
+INSPIRE_ACTS = ["R_thumb_proximal_yaw_joint", "R_thumb_proximal_pitch_joint", "R_index_proximal_joint",
+                "R_middle_proximal_joint", "R_ring_proximal_joint", "R_pinky_proximal_joint"]
+
+
+def _swap_right_hand_to_inspire(spec):
+    """Replace the right Dex3-1 with the 5-finger Inspire hand; the rest of the G1 stays as it is.
+
+    WHY keep Menagerie's G1 and swap only the hand (instead of loading Unitree's full G1+Inspire URDF)?
+    The Menagerie body already has tuned actuators, the stand pose and every fix in 'Pitfalls' (contact
+    excludes, implicit integrator, fixed pelvis). The URDF has no actuators at all. Swapping one subtree
+    keeps everything the arm IK, the camera and the replay were validated on; only the hand is new.
+    The mount (0.0415 m along the wrist_yaw x axis, rpy (pi, 0, -pi/2)) is copied from Unitree's URDF.
+    The palm_center site stays at the wrist_yaw origin, the same IK point as with the Dex3."""
+    for a in list(spec.actuators):                      # actuators first: they reference the joints
+        if a.name.startswith("right_hand_"):
+            spec.delete(a)
+    wrist = spec.body("right_wrist_yaw_link")
+    for b in list(wrist.bodies):
+        spec.delete(b)
+    hs = mujoco.MjSpec.from_file(str(INSPIRE / "inspire_hand" / "DFQ_right_hand.urdf"))
+    for mesh in hs.meshes:                              # absolute paths: the G1's meshes live elsewhere
+        mesh.file = str(INSPIRE / mesh.file)
+    base = hs.body("R_hand_base_link")
+    frame = wrist.add_frame()
+    frame.attach_body(base, "", "")
+    spec.meshdir = str(MENAGERIE / "assets")
+    # The URDF's coupled joints, re-added if the attach didn't carry the equalities over.
+    have = {(e.name1, e.name2) for e in spec.equalities}
+    for child, parent, mult in [("R_thumb_intermediate_joint", "R_thumb_proximal_pitch_joint", 1.6),
+                                ("R_thumb_distal_joint", "R_thumb_proximal_pitch_joint", 2.4)] + \
+            [(f"R_{f}_intermediate_joint", f"R_{f}_proximal_joint", 1.0) for f in ["index", "middle", "ring", "pinky"]]:
+        if (child, parent) not in have:
+            spec.add_equality(type=mujoco.mjtEq.mjEQ_JOINT, name1=child, name2=parent,
+                              data=[0, mult, 0, 0, 0] + [0] * 6)
+    # The URDF has no joint damping or rotor inertia, and its finger links weigh ~4 g: even a soft servo
+    # snapped the index shut in 54 ms (the real hand takes ~0.5 s). Fingers then tunnelled into the tube
+    # between physics steps and the solver threw it off the table (0/144 in the first sweep, 3 Nov).
+    # Damping + armature give a ~0.4 s close, like the real geared finger drives.
+    for j in spec.joints:
+        if j.name.startswith("R_") and j.name.endswith("_joint"):
+            # damping is a 3-vector in MuJoCo 3.17. The thumb yaw has no coupled joint (and moves the
+            # whole thumb sideways): with the common value it still swung in 34 ms, so it gets more.
+            dmp = INSPIRE_DAMPING * (3 if j.name == "R_thumb_proximal_yaw_joint" else 1)
+            j.damping, j.armature = [dmp, 0, 0], 0.001
+    # Torsional friction on the hand's contacts (condim 4). The Inspire's four fingers are stacked
+    # vertically, so their contact normals on the vertical tube point sideways; with plain condim 3 nothing
+    # resists the tube ROTATING about those normals, and in the carry it pivoted out of a 30-N grip
+    # (3 Nov sweep). Real finger pads are soft and resist that twist; condim 4 + torsional friction
+    # (the tube's own 0.01 m) models it. Only the Inspire geoms change: the Dex3 setup stays as validated.
+    for g in spec.geoms:
+        if g.contype and (g.name or "").startswith("") and _in_inspire(spec, g):
+            g.condim = 4
+    for j in INSPIRE_ACTS:                              # soft position servos, like the Dex3 (kp=20 there)
+        lo, hi = spec.joint(j).range
+        spec.add_actuator(name=j, target=j, trntype=mujoco.mjtTrn.mjTRN_JOINT, ctrlrange=[lo, hi],
+                          ctrllimited=True, gaintype=mujoco.mjtGain.mjGAIN_FIXED,
+                          biastype=mujoco.mjtBias.mjBIAS_AFFINE, gainprm=[INSPIRE_KP] + [0] * 9,
+                          biasprm=[0, -INSPIRE_KP, -0.05] + [0] * 7)
+
+
+def _in_inspire(spec, g):
+    """True if geom g belongs to the Inspire hand (its bodies are named R_...)."""
+    b = g.parent
+    return b is not None and b.name.startswith("R_")
+
+
+INSPIRE_KP = 0.5        # finger servo stiffness (N m/rad): ~10 N at a fingertip at full squeeze
+INSPIRE_DAMPING = 0.04  # N m s/rad (each joint; the coupled joint doubles it): index closes to 1.5 rad in ~0.45 s
 
 
 def make():
     """Compile and return (model, data, stand_qpos) in the standing pose with servos holding it."""
     spec, stand_qpos = build()
     m = spec.compile()
+    from paths import HAND
+    if HAND == "inspire":
+        # stand_qpos is in the Dex3 model's joint order; re-map it by joint NAME (Inspire fingers open = 0).
+        ref = mujoco.MjModel.from_xml_path(str(MENAGERIE / "g1_with_hands.xml"))
+        named = {ref.joint(j).name: stand_qpos[ref.jnt_qposadr[j] - 7] for j in range(1, ref.njnt)}
+        stand_qpos = np.array([named.get(m.joint(j).name, 0.0) for j in range(m.njnt)
+                               if m.joint(j).name != "cup_free"])
     d = mujoco.MjData(m)
     reset(m, d, stand_qpos)
     return m, d, stand_qpos

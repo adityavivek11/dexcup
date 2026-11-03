@@ -24,7 +24,7 @@ def trial(xy):
     d.qpos[adr:adr + 7] = [*cup0, 1, 0, 0, 0]
     mujoco.mj_forward(m, d)
     off, clr = T.OFF, T.CLEAR
-    wps = [(cup0 + off + clr + [0, 0, .12], False, 1.2), (cup0 + off + clr, False, 1.0), (cup0 + off, False, .8),
+    wps = [(cup0 + off + clr + [0, 0, T.UP], False, 1.2), (cup0 + off + clr, False, 1.0), (cup0 + off, False, .8),
            (cup0 + off, True, .8), (cup0 + off + [0, 0, .09], True, .8), (cup0 + off + [0, 0, .09], True, .6)]
     cur = d.site("palm_center").xpos.copy(); err = []
     for tgt, closed, secs in wps:
@@ -32,8 +32,8 @@ def trial(xy):
         for k in range(n):
             a = min(1, k / (0.7 * n)); a = a * a * (3 - 2 * a); cur = start + a * (tgt - start)
             q, _, _ = ik.solve(d.qpos, cur, T.HAND_QUAT, iters=30); d.ctrl[T.ARM_ACT] = q
-            for j, v in (T.FINGERS_CLOSE if closed else T.FINGERS_OPEN).items():
-                d.ctrl[m.actuator(j).id] = v
+            for j in T.FINGER_ACTS:
+                d.ctrl[m.actuator(j).id] = (T.FINGERS_CLOSE if closed else T.FINGERS_OPEN)[j]
             mujoco.mj_step(m, d, nstep=T.SUBSTEPS)
             err.append(np.linalg.norm(d.site("palm_center").xpos - cur))
     ok, _ = gc.is_grasped(d)
@@ -51,7 +51,8 @@ if __name__ == "__main__":
     print("   y: " + " ".join(f"{y:+.2f}" for y in YS))
     for x in XS:
         print(f"x={x:.2f} " + " ".join(("  ##  " if S[(x, y)][0] else f"{S[(x, y)][1]*1000:5.0f} ") for y in YS))
-    Path("data").mkdir(exist_ok=True)
-    np.savez("data/reach_map.npz", xs=XS, ys=YS, ok=np.array([[S[(x, y)][0] for y in YS] for x in XS]),
+    from paths import DATA                  # per-hand output (paths.py)
+    DATA.mkdir(parents=True, exist_ok=True)
+    np.savez(DATA / "reach_map.npz", xs=XS, ys=YS, ok=np.array([[S[(x, y)][0] for y in YS] for x in XS]),
              err=np.array([[S[(x, y)][1] for y in YS] for x in XS]))
     print(f"\n{sum(v[0] for v in S.values())}/{len(S)} positions work")

@@ -28,6 +28,7 @@ import cv2
 from scipy.signal import savgol_filter
 
 ROOT = Path(__file__).parent
+from paths import DATA                  # per-hand workspace files; human geometry stays shared
 CTRL_DT = 0.02
 S_DEFAULT = 0.3                 # horizontal scale: 48/55 clips fit the measured workspace (0.35: 45, 0.5: 22;
                                 # 0.25 fits all but the tube nearly touches the roll). See CLAUDE.md.
@@ -35,7 +36,7 @@ GRASP_PAUSE, RELEASE_PAUSE = 0.6, 0.5      # robot fingers need time to close/op
 MIN_PHASE = 0.8                 # seconds: floor for retimed scripted segments (servo/IK can't go faster)
 TIME_SCALE = 1.0                # >1 slows the human carry down (robot slower than a human)
 ROBOT_HEAD_XY = np.array([0.096, 0.0])          # build_g1_scene prints head=[0.096 0 1.237]
-SHIFT_FILE = ROOT / "data" / "retarget_shift.json"
+SHIFT_FILE = DATA / "retarget_shift.json"   # per hand
 GEO_DIR = ROOT / "data" / "human_geom"
 
 
@@ -162,7 +163,7 @@ def workspace_shift(points, center):
 class Reach:
     """Measured grasp-and-lift feasibility (data/reach_map.npz from reach_map.py), nearest grid cell."""
     def __init__(self):
-        r = np.load(ROOT / "data" / "reach_map.npz")
+        r = np.load(DATA / "reach_map.npz")        # measured per hand
         self.xs, self.ys, self.ok = r["xs"], r["ys"], r["ok"]
         cells = np.array([(x, y) for i, x in enumerate(self.xs) for j, y in enumerate(self.ys) if self.ok[i, j]])
         self.center = np.median(cells, axis=0)
@@ -244,7 +245,7 @@ def plan(clip, S=S_DEFAULT, shift=None):
     t_appr = max(MIN_PHASE * 3, t[ig])                 # human approach duration (scripted path retimed)
     t_ret = max(MIN_PHASE * 2, t[-1] - t[ip])
     off, clear = G.OFF, G.CLEAR
-    above = cup0 + off + clear + [0, 0, 0.12]
+    above = cup0 + off + clear + [0, 0, G.UP]
     # Segments: (phase, start | path, end, secs, fingers closed?), or ("poly", waypoints, secs, closed,
     # phase per polyline segment) for continuous motions (None waypoint = the palm wherever it is).
     segs = [
@@ -259,7 +260,7 @@ def plan(clip, S=S_DEFAULT, shift=None):
     place = Cr[-1] + off
     segs += [("transport", carry, None, None, True),
              ("place", place, place, RELEASE_PAUSE, False),          # still palm, fingers visibly open
-             ("poly", [place, place + clear, place + clear + [0, 0, 0.12]], t_ret, False, ["retreat", "retreat"])]
+             ("poly", [place, place + G.BACK, place + G.BACK + [0, 0, G.UP]], t_ret, False, ["retreat", "retreat"])]
     return dict(clip=clip, S=S, cup0=cup0, coaster=np.r_[coaster, 0.0], segs=segs, lin=lin, poly=poly,
                 t_grasp=float(t[ig]), t_place=float(t[ip]), z_err=float(g["z_err"]),
                 carry_len=float(np.sum(np.linalg.norm(np.diff(Cr[:, :2], axis=0), axis=1)))), None

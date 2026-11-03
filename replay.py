@@ -16,14 +16,23 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).parent
-OUT = ROOT / "data" / "replayed"
-DART_OUT = ROOT / "data" / "dart"
+from paths import DATA                  # per-hand outputs; tracks/coaster stay shared in data/
+OUT = DATA / "replayed"
+DART_OUT = DATA / "dart"
 # Noise injection (DART), used when the teacher cut corners on the approach: an Ornstein-Uhlenbeck random
 # walk is added to the EXECUTED palm target while the LABEL stays the clean plan target, so the data
 # contains states off the demo path labelled with the way back. Smooth (tau 0.5 s), ~1 cm: per-tick white
 # noise mostly cancels in the servo and creates no real deviation. Zero while closing on / releasing the
 # tube: the grasp tolerates only ~+-5 mm, so noise there mainly knocks the tube over.
 NOISE_SIGMA, NOISE_TAU = 0.01, 0.5
+from paths import HAND
+if HAND != "dex3":
+    # Inspire: 0/192 noisy replays survived 1 cm noise (palm up to 4 cm off the clean path: the pre-shaped
+    # hand bumped the tube on the way in, or the lighter 5-finger grip shook loose in the carry). Its grasp
+    # window is ~1 cm. At 0.5 cm, 8/12 test replays succeeded (3 Nov). DART noise should look like the
+    # policy's own errors, so it is scaled to the hand's tolerance.
+    NOISE_SIGMA = 0.005
+NO_NOISE_PHASES = ("grasp", "place")                 # the fingers close/open on a still palm
 PHASE_ID = {"approach": 0, "grasp": 1, "transport": 2, "place": 3, "retreat": 4}
 # Table box (build_g1_scene): centre (0.42, -0.05), half-size (0.20, 0.35). Keep objects 3 cm inside.
 TABLE_X, TABLE_Y = (0.22 + 0.08, 0.62 - 0.05), (-0.40 + 0.05, 0.30 - 0.05)
@@ -90,12 +99,12 @@ def run(clip, S, shift=None, noise_seed=None):
         exec_target = target
         if rng is not None:
             n = n * (1 - a_ou) + NOISE_SIGMA * np.sqrt(2 * a_ou) * rng.standard_normal(3)
-            if phase not in ("grasp", "place"):
+            if phase not in NO_NOISE_PHASES:
                 exec_target = target + n                     # label (recorded above) stays clean
         arm_q, _, _ = ik.solve(d.qpos, exec_target, T.HAND_QUAT, iters=30)
         d.ctrl[T.ARM_ACT] = arm_q
-        for j, q in fingers.items():
-            d.ctrl[m.actuator(j).id] = q
+        for j in T.FINGER_ACTS:
+            d.ctrl[m.actuator(j).id] = fingers[j]
         mujoco.mj_step(m, d, nstep=T.SUBSTEPS)
         track_err.append(np.linalg.norm(d.site("palm_center").xpos - target))
     ep = {k: np.array(v) for k, v in rec.items()}

@@ -94,8 +94,8 @@ def run_episode(seed: int):
             rec["action"].append(np.concatenate([cur, T.HAND_QUAT, finger_targets]))
             arm_q, _, _ = ik.solve(d.qpos, cur, T.HAND_QUAT, iters=30)
             d.ctrl[T.ARM_ACT] = arm_q
-            for j, q in fingers.items():
-                d.ctrl[m.actuator(j).id] = q
+            for j in T.FINGER_ACTS:
+                d.ctrl[m.actuator(j).id] = fingers[j]
             mujoco.mj_step(m, d, nstep=T.SUBSTEPS)
 
     ep = {k: np.array(v) for k, v in rec.items()}
@@ -120,16 +120,27 @@ def label_phases(ep) -> np.ndarray:
     g = np.flatnonzero(ep["grasped"])
     if len(g) == 0:
         return lab                                              # never grasped: all approach
-    d_palm_cup = np.linalg.norm(ep["palm_pos"] - ep["cup_pos"], axis=1)
-    d_hold = d_palm_cup[g[0]]
-    t_grasp = np.flatnonzero(d_palm_cup < d_hold + 0.02)[0]
+    from paths import HAND
+    if HAND == "dex3":                                          # original rules: Dex3 labels stay reproducible
+        d_palm_cup = np.linalg.norm(ep["palm_pos"] - ep["cup_pos"], axis=1)
+        d_hold = d_palm_cup[g[0]]
+        t_grasp = np.flatnonzero(d_palm_cup < d_hold + 0.02)[0]
+    else:
+        # Inspire: the hand holds the tube 19 cm ahead of the wrist and comes STRAIGHT DOWN, so the palm-cup
+        # DISTANCE barely changes during the descent (grasp label fired 1.6 s early). Compare the palm's
+        # position RELATIVE to the cup with its holding position instead: works for any approach direction.
+        rel = ep["palm_pos"] - ep["cup_pos"]
+        t_grasp = np.flatnonzero(np.linalg.norm(rel - rel[g[0]], axis=1) < 0.02)[0]
     z0 = ep["cup_pos"][0, 2]
     lifted = np.flatnonzero(ep["cup_pos"][:, 2] > z0 + 0.02)
     t_lift = lifted[0] if len(lifted) else T
     near = np.flatnonzero((np.linalg.norm(ep["cup_pos"][:, :2] - ep["coaster_pos"][:, :2], axis=1) < 0.03)
                           & (np.arange(T) > t_lift))
     t_place = near[0] if len(near) else T
-    after = np.flatnonzero(~ep["contact_any"] & (np.arange(T) > t_place))
+    # place ends when the hand has let go. Dex3: no finger contact at all. Inspire: the open pre-shaped thumb
+    # keeps brushing the tube until the back-off (place ran 1.6 s long), so use "not grasped" (contacts.py).
+    let_go = ~ep["contact_any"] if HAND == "dex3" else ~np.asarray(ep["grasped"], bool)
+    after = np.flatnonzero(let_go & (np.arange(T) > t_place))
     t_ret = after[0] if len(after) else T
     for t0, ph in [(t_grasp, 1), (t_lift, 2), (t_place, 3), (t_ret, 4)]:
         lab[t0:] = ph

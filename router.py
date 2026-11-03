@@ -22,6 +22,7 @@ import torch.nn as nn
 from policy import split, load_set, Norm, PhaseNet
 
 ROOT = Path(__file__).parent
+from paths import MODELS                # per-hand output folder (paths.py)
 TEACHER_PHASES = (1, 3)                      # grasp, place
 
 
@@ -48,8 +49,8 @@ def train_phase(epochs=60):
     agree = (t_true == t_pred).float().mean().item()
     print(f"phase net: val accuracy {acc:.0%} | teacher-or-not decision agrees with labels {agree:.0%} "
           f"| teacher fraction labels {t_true.float().mean():.0%}, predicted {t_pred.float().mean():.0%}")
-    (ROOT / "models").mkdir(exist_ok=True)
-    torch.save(net, ROOT / "models" / "phase.pt")
+    MODELS.mkdir(parents=True, exist_ok=True)
+    torch.save(net, MODELS / "phase.pt")
     return net
 
 

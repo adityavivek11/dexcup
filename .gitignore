@@ -8,3 +8,5 @@ dexcup_cloud.zip
 models/
 results/
 kaggle/data/
+kaggle/data_inspire/
+dexcup_cloud_*.zip

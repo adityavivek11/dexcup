@@ -34,11 +34,12 @@ import torch
 import torch.nn as nn
 
 ROOT = Path(__file__).parent
+from paths import DATA                  # per-hand data folder (paths.py)
 H = 16                       # chunk length: 16 ticks = 0.32 s
 OBS_DIM, ACT_DIM = 31, 4      # base observation; +VEL_DIM when cfg["vel"]
 VEL_DIM = 7
 DEFAULT_CFG = {"frame": "palm", "vel": False}
-REPLAYED = ROOT / "data" / "replayed"
+REPLAYED = DATA / "replayed"
 VAL_EVERY = 5                # hold-out: every 5th successful episode (sorted by clip name) -> ~20%
 
 
@@ -122,10 +123,10 @@ def chunk_targets(act, anc, H=H):
     return np.concatenate([pos, np.stack([grip[t:t + H] for t in range(T)])[..., None]], -1).astype(np.float32)
 
 
-DART = ROOT / "data" / "dart"
+DART = DATA / "dart"
 
 
-SPLIT = ROOT / "data" / "split.json"
+SPLIT = DATA / "split.json"
 
 
 def split(dart=False, fold=None, folds=5):

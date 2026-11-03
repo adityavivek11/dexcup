@@ -16,6 +16,7 @@ import torch
 from policy import (split, load_set, chunk_targets, Norm, Teacher, action_loss, H)
 
 ROOT = Path(__file__).parent
+from paths import MODELS                # per-hand output folder (paths.py)
 
 
 def main():
@@ -77,9 +78,9 @@ def main():
         # picking a checkpoint by the fold's held-out clips would let the test clips choose the model.
         if (lv < best and a.fold is None) or (a.fold is not None and ep == a.epochs - 1):
             best = float(lv)
-            (ROOT / "models").mkdir(exist_ok=True)
+            MODELS.mkdir(parents=True, exist_ok=True)
             # saved as a CPU model: the laptop loads it for the sim evaluation, which runs on CPU
-            torch.save(copy.deepcopy(model).cpu(), ROOT / "models" / name)
+            torch.save(copy.deepcopy(model).cpu(), MODELS / name)
         # every epoch, flushed: buffered output hid all progress on the first (CPU) attempt
         print(f"epoch {ep:3d}  val loss {lv:.3f}  (pos rmse {pv.sqrt():.2f} cm, grip bce {gv:.3f})  "
               f"{time.time()-t0:.0f}s", flush=True)

@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 ROOT = Path(__file__).parent
+from paths import MODELS, RESULTS      # per-hand output folders (paths.py)
 
 
 def layouts(kind, n=100, seed=0):
@@ -42,7 +43,7 @@ def layouts(kind, n=100, seed=0):
 def make_agent(name, layouts="val", seed=0):
     import torch
     from sim_env import TeacherAgent, StudentAgent
-    load = lambda f: torch.load(ROOT / "models" / f, weights_only=False)
+    load = lambda f: torch.load(MODELS / f, weights_only=False)
     if name == "teacher":
         return TeacherAgent(load("teacher.pt"))
     if name.startswith("teacher_"):                     # e.g. teacher_fold2 -> models/teacher_fold2.pt
@@ -54,7 +55,7 @@ def make_agent(name, layouts="val", seed=0):
         return RouterAgent(load("teacher.pt"), load("student.pt"), mode="router", phase=load("phase.pt"))
     if name == "random":
         # same teacher-call fraction AND mean teacher-segment length as the router on the SAME layouts
-        r = json.loads((ROOT / "results" / f"router_{layouts}.json").read_text())
+        r = json.loads((RESULTS / f"router_{layouts}.json").read_text())
         return RouterAgent(load("teacher.pt"), load("student.pt"), mode="random",
                            p=r["teacher_call_fraction"], L=r["mean_segment_ticks"], seed=seed)
     raise ValueError(name)
@@ -96,7 +97,7 @@ if __name__ == "__main__":
                                             max(1, sum(r.get("segments", 0) for r in res))),
                    per_episode=[{k: v for k, v in r.items() if k != "call_ms"}
                                                                     for r in res])
-    (ROOT / "results").mkdir(exist_ok=True)
-    (ROOT / "results" / f"{a.agent}_{a.layouts}.json").write_text(json.dumps(summary, indent=1))
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    (RESULTS / f"{a.agent}_{a.layouts}.json").write_text(json.dumps(summary, indent=1))
     print(f"{a.agent} on {a.layouts} ({len(res)} eps): success {succ:.0%} | latency per call mean "
           f"{ms.mean():.3f} ms, p95 {np.percentile(ms, 95):.3f} ms | teacher-call fraction {tfrac:.0%}")

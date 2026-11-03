@@ -13,6 +13,7 @@ import numpy as np
 import mujoco
 
 ROOT = Path(__file__).parent
+from paths import DATA
 PHASES = ["approach", "grasp", "transport", "place", "retreat"]
 
 
@@ -36,7 +37,7 @@ def set_state(m, d, ik, fq, cup, e, k):
 
 
 def load(clip):
-    e = dict(np.load(ROOT / "data" / "replayed" / f"{clip}.npz"))
+    e = dict(np.load(DATA / "replayed" / f"{clip}.npz"))
     return e
 
 
@@ -111,4 +112,4 @@ if __name__ == "__main__":
         live(a.clips[0])
     else:
         for c in a.clips:
-            print("wrote", video(c, ROOT / "data" / "videos"))
+            print("wrote", video(c, DATA / "videos"))

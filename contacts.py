@@ -15,11 +15,7 @@ This is the classic "opposition" condition: two opposing contacts are the minimu
 import mujoco
 import numpy as np
 
-FINGER_LINKS = {
-    "thumb": ["right_hand_thumb_2_link"],
-    "index": ["right_hand_index_1_link"],
-    "middle": ["right_hand_middle_1_link"],
-}
+from hands import FINGER_LINKS   # Dex3: thumb/index/middle distal links; Inspire: + ring, pinky
 MIN_NORMAL_FORCE = 0.5  # newtons; cup weighs ~1.2 N, so two contacts at >=0.5 N with friction can hold it
 
 
@@ -48,5 +44,7 @@ class GraspChecker:
     def is_grasped(self, data: mujoco.MjData) -> tuple[bool, dict]:
         f = self.finger_forces(data)
         thumb = f["thumb"] > MIN_NORMAL_FORCE
-        opposing = max(f["index"], f["middle"]) > MIN_NORMAL_FORCE
+        # Same opposition rule for both hands: thumb AND at least one opposing finger (Dex3: index or
+        # middle; Inspire: index, middle, ring or pinky).
+        opposing = max(v for k, v in f.items() if k != "thumb") > MIN_NORMAL_FORCE
         return bool(thumb and opposing), f
