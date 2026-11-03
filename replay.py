@@ -17,12 +17,19 @@ import numpy as np
 
 ROOT = Path(__file__).parent
 OUT = ROOT / "data" / "replayed"
+DART_OUT = ROOT / "data" / "dart"
+# Noise injection (DART), used when the teacher cut corners on the approach: an Ornstein-Uhlenbeck random
+# walk is added to the EXECUTED palm target while the LABEL stays the clean plan target, so the data
+# contains states off the demo path labelled with the way back. Smooth (tau 0.5 s), ~1 cm: per-tick white
+# noise mostly cancels in the servo and creates no real deviation. Zero while closing on / releasing the
+# tube: the grasp tolerates only ~+-5 mm, so noise there mainly knocks the tube over.
+NOISE_SIGMA, NOISE_TAU = 0.01, 0.5
 PHASE_ID = {"approach": 0, "grasp": 1, "transport": 2, "place": 3, "retreat": 4}
 # Table box (build_g1_scene): centre (0.42, -0.05), half-size (0.20, 0.35). Keep objects 3 cm inside.
 TABLE_X, TABLE_Y = (0.22 + 0.08, 0.62 - 0.05), (-0.40 + 0.05, 0.30 - 0.05)
 
 
-def run(clip, S, shift=None):
+def run(clip, S, shift=None, noise_seed=None):
     import warnings; warnings.filterwarnings("ignore")
     import mujoco
     import retarget
@@ -46,12 +53,15 @@ def run(clip, S, shift=None):
 
     # expand the plan into one palm target per 20 ms tick
     ticks, cur = [], d.site("palm_center").xpos.copy()
-    for phase, a, b, secs, closed in P["segs"]:
-        if secs is None:                                    # pre-sampled path (the human carry)
-            path = a
+    for seg in P["segs"]:
+        if seg[0] == "poly":                                # continuous multi-waypoint motion
+            _, pts, secs, closed, phases = seg
+            path, idx = P["poly"]([cur if q is None else q for q in pts], secs)
+            ticks += [(phases[i], x, closed) for x, i in zip(path, idx)]
         else:
-            path = P["lin"](cur if a is None else a, b, secs)
-        ticks += [(phase, x, closed) for x in path]
+            phase, a, b, secs, closed = seg
+            path = a if secs is None else P["lin"](cur if a is None else a, b, secs)   # None: human carry
+            ticks += [(phase, x, closed) for x in path]
         cur = path[-1]
 
     rec = {k: [] for k in ["arm_q", "arm_dq", "finger_q", "palm_pos", "palm_quat", "cup_pos", "cup_quat",
@@ -60,6 +70,9 @@ def run(clip, S, shift=None):
     arm_dof = [m.joint(j).dofadr[0] for j in T.RIGHT_ARM]
     coaster_world = np.r_[coaster[:2], m.geom_pos[m.geom("coaster").id][2]]
     track_err = []
+    rng = np.random.default_rng(noise_seed) if noise_seed is not None else None
+    n = np.zeros(3)
+    a_ou = 0.02 / NOISE_TAU
     for phase, target, closed in ticks:
         fingers = T.FINGERS_CLOSE if closed else T.FINGERS_OPEN
         ok, f = gc.is_grasped(d)                            # observation BEFORE acting
@@ -74,7 +87,12 @@ def run(clip, S, shift=None):
         rec["phase_script"].append(PHASE_ID[phase])
         finger_targets = np.array([fingers[j] for j in T.FINGER_JOINTS])
         rec["action"].append(np.concatenate([target, T.HAND_QUAT, finger_targets]))
-        arm_q, _, _ = ik.solve(d.qpos, target, T.HAND_QUAT, iters=30)
+        exec_target = target
+        if rng is not None:
+            n = n * (1 - a_ou) + NOISE_SIGMA * np.sqrt(2 * a_ou) * rng.standard_normal(3)
+            if phase not in ("grasp", "place"):
+                exec_target = target + n                     # label (recorded above) stays clean
+        arm_q, _, _ = ik.solve(d.qpos, exec_target, T.HAND_QUAT, iters=30)
         d.ctrl[T.ARM_ACT] = arm_q
         for j, q in fingers.items():
             d.ctrl[m.actuator(j).id] = q
@@ -87,8 +105,10 @@ def run(clip, S, shift=None):
     ep["success"] = np.array(bool(dist < 0.03 and upright))
     ep["phase_auto"] = label_phases(ep)
     ep["clip"] = np.array(clip); ep["S"] = np.array(S)
-    OUT.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(OUT / f"{clip}.npz", **ep)
+    out_dir, name = (OUT, clip) if noise_seed is None else (DART_OUT, f"{clip}_n{noise_seed}")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_dir / f"{name}.npz", **ep)
+    clip = name
     held = bool(ep["grasped"][ep["phase_script"] == 2].mean() > 0.8) if (ep["phase_script"] == 2).any() else False
     why = "" if ep["success"] else (f"dropped during carry" if not held else
                                      f"tube {dist*100:.1f} cm from coaster, upright={upright}")
@@ -117,11 +137,22 @@ if __name__ == "__main__":
     ap.add_argument("clips", nargs="*")
     ap.add_argument("--S", type=float, default=None)
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--noise", type=int, default=0, help="K noise-injected replays per SUCCESSFUL clip (DART)")
     a = ap.parse_args()
     import retarget
     S = a.S if a.S is not None else retarget.S_DEFAULT
     clips = a.clips or sorted(p.stem for p in (ROOT / "data" / "tracks").glob("*.npz"))
     import json
+    if a.noise:
+        ok_clips = a.clips or sorted(p.stem for p in OUT.glob("*.npz") if bool(np.load(p)["success"]))
+        shift = np.array(json.loads(retarget.SHIFT_FILE.read_text())[str(S)])
+        jobs = [(c, S, shift, k) for c in ok_clips for k in range(1, a.noise + 1)]
+        with mp.get_context("spawn").Pool(a.workers) as pool:
+            res = dict(pool.map(_worker, jobs))
+        n_ok = sum(r["ok"] for r in res.values())
+        fails = [c for c, r in res.items() if not r["ok"]]
+        print(f"DART: {n_ok}/{len(res)} noisy replays still succeed (kept for training); failed: {fails}")
+        raise SystemExit
     with mp.get_context("spawn").Pool(a.workers) as pool:
         # The shared workspace shift uses ALL tracked clips, so it doesn't depend on which clips are
         # replayed in this run. Geometry is cached per clip (data/human_geom).

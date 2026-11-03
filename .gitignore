@@ -4,3 +4,7 @@ MUJOCO_LOG.TXT
 data/
 recordings/
 *.r3d
+dexcup_cloud.zip
+models/
+results/
+kaggle/data/

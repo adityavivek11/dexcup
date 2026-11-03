@@ -187,6 +187,23 @@ def lin(a, b, secs):
     return a + u * (b - a)
 
 
+def poly(points, secs):
+    """Move along a polyline with ONE ease-in/ease-out over its whole arc length: speed is zero only at the
+    first and last point, never at the corners. Returns (positions (n,3), segment index per tick).
+    WHY (teacher v2 stalled at waypoints): the first version chained segments that each eased to a FULL
+    STOP. At such a stop the demo's next action is ~0 ("start moving very slowly"), so a state-based policy,
+    which sees no velocity or clock, has a fixed point there and hovers forever (val 3: stuck 9.6 cm above
+    the tube). Same path corners as before, so the same tube clearance."""
+    P = np.asarray(points, float)
+    L = np.r_[0, np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))]
+    n = max(2, int(round(secs / CTRL_DT)))
+    u = np.linspace(0, 1, n)
+    s = (u * u * (3 - 2 * u)) * L[-1]                     # smoothstep on arc length
+    idx = np.clip(np.searchsorted(L, s, side="right") - 1, 0, len(P) - 2)
+    frac = np.where(L[idx + 1] > L[idx], (s - L[idx]) / np.maximum(L[idx + 1] - L[idx], 1e-9), 0)
+    return P[idx] + frac[:, None] * (P[idx + 1] - P[idx]), idx
+
+
 def plan(clip, S=S_DEFAULT, shift=None):
     """Robot episode plan for one clip, or (None, reason). shift: see workspace_shift (loaded if None)."""
     if shift is None:
@@ -228,12 +245,12 @@ def plan(clip, S=S_DEFAULT, shift=None):
     t_ret = max(MIN_PHASE * 2, t[-1] - t[ip])
     off, clear = G.OFF, G.CLEAR
     above = cup0 + off + clear + [0, 0, 0.12]
-    segs = [                                           # (phase, start | path, end, secs, fingers closed?)
-        # approach: ready -> above-beside -> down-beside -> slide in (fractions of the human approach time)
-        ("approach", None, above, 0.45 * t_appr, False),
-        ("approach", above, cup0 + off + clear, 0.30 * t_appr, False),
-        ("grasp", cup0 + off + clear, cup0 + off, 0.25 * t_appr, False),
-        ("grasp", cup0 + off, cup0 + off, GRASP_PAUSE, True),
+    # Segments: (phase, start | path, end, secs, fingers closed?), or ("poly", waypoints, secs, closed,
+    # phase per polyline segment) for continuous motions (None waypoint = the palm wherever it is).
+    segs = [
+        # approach: ready -> above-beside -> down-beside -> slide in, one continuous motion (see poly)
+        ("poly", [None, above, cup0 + off + clear, cup0 + off], t_appr, False, ["approach", "approach", "grasp"]),
+        ("grasp", cup0 + off, cup0 + off, GRASP_PAUSE, True),   # still palm, but the fingers visibly close
     ]
     # carry: the human tube path, resampled to 50 Hz, palm = tube + robot grasp offset
     tc = (t[ig:ip + 1] - t[ig]) * TIME_SCALE
@@ -241,9 +258,8 @@ def plan(clip, S=S_DEFAULT, shift=None):
     carry = np.stack([np.interp(tt, tc, Cr[:, k]) for k in range(3)], 1) + off
     place = Cr[-1] + off
     segs += [("transport", carry, None, None, True),
-             ("place", place, place, RELEASE_PAUSE, False),
-             ("retreat", place, place + clear, 0.4 * t_ret, False),
-             ("retreat", place + clear, place + clear + [0, 0, 0.12], 0.6 * t_ret, False)]
-    return dict(clip=clip, S=S, cup0=cup0, coaster=np.r_[coaster, 0.0], segs=segs, lin=lin,
+             ("place", place, place, RELEASE_PAUSE, False),          # still palm, fingers visibly open
+             ("poly", [place, place + clear, place + clear + [0, 0, 0.12]], t_ret, False, ["retreat", "retreat"])]
+    return dict(clip=clip, S=S, cup0=cup0, coaster=np.r_[coaster, 0.0], segs=segs, lin=lin, poly=poly,
                 t_grasp=float(t[ig]), t_place=float(t[ip]), z_err=float(g["z_err"]),
                 carry_len=float(np.sum(np.linalg.norm(np.diff(Cr[:, :2], axis=0), axis=1)))), None
