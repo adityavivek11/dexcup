@@ -1,5 +1,6 @@
 mujoco>=3.2
 numpy
+scipy                # smoothing in retarget.py
 pillow
 imageio
 imageio-ffmpeg
