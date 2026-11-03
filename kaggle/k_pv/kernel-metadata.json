@@ -1,0 +1,13 @@
+{
+ "id": "adityavivek11/dexcup-pv",
+ "title": "dexcup-pv",
+ "code_file": "train_kernel.py",
+ "language": "python",
+ "kernel_type": "script",
+ "is_private": true,
+ "enable_gpu": true,
+ "enable_internet": false,
+ "dataset_sources": [
+  "adityavivek11/dexcup-replayed"
+ ]
+}
