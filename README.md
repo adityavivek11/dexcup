@@ -9,7 +9,7 @@
 > 76% success at about 3x less estimated compute, compared with 86% success when the teacher runs at every
 > step. A random schedule with the same number of teacher calls reaches only 43%.
 
-📄 **Paper:** [PDF](https://drive.google.com/file/d/1eiPPhiw6VU9yPI205im1MNwrSYMAurpq/view?usp=sharing) ([LaTeX source](paper/dexcup_paper.tex)) · 🎥 **Recordings:** [Google Drive](https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing) · 🎬 **Demo:** [`demo_router.mp4`](demo_router.mp4)
+🎥 **Recordings:** [Google Drive](https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing) · 🎬 **Demo:** [`demo_router.mp4`](demo_router.mp4)
 
 ---
 
@@ -58,6 +58,8 @@ execute with the more complex hand. Compared with the 3-finger Dex3-1, the teach
 59% and the router's from 76% to 59%, while the router's teacher calls rose from 32% to 44% of control steps
 and its compute saving shrank from about 3x to about 2.2x. Each hand was tested on 100 layouts from its own
 workspace.
+
+For every little detail, you can read the paper I wrote during the making of this project: https://drive.google.com/file/d/1eiPPhiw6VU9yPI205im1MNwrSYMAurpq/view?usp=sharing
 
 ---
 
@@ -165,7 +167,6 @@ The scripts sit in one folder, one per pipeline stage, grouped here in pipeline 
 ├── models/                   # trained teacher, student, router
 ├── results/                  # per-episode results + latency
 ├── data/                     # processed robot episodes, split, reach map (no video)
-├── paper/dexcup_paper.tex    # the paper
 
 # Data: phone video -> poses
 ├── make_printables.py        # print-ready AprilTags + checkerboard (printables/*.pdf)
