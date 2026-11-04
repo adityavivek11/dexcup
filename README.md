@@ -464,3 +464,7 @@ a law; see the caveats in [Results](#-results--benchmarks).
 ---
 
 **Authorship note:** adityavivek11 is the original author of this project. I pushed some changes from my friend Divyansh's laptop, so some code has been pushed through his ID.
+
+**Links:**
+- **Recordings:** https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing
+- **Paper:** https://drive.google.com/file/d/1eiPPhiw6VU9yPI205im1MNwrSYMAurpq/view?usp=sharing
