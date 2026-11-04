@@ -458,3 +458,7 @@ a law; see the caveats in [Results](#-results--benchmarks).
   identical.
 * Fix the Inspire teacher's grip uncertainty with more varied release positions in the data, instead of a
   threshold.
+
+---
+
+**Authorship note:** adityavivek11 is the original author of this project. I pushed some changes from my friend Divyansh's laptop, so some code has been pushed through his ID.
