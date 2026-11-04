@@ -1,0 +1,512 @@
+{
+ "agent": "teacher",
+ "layouts": "random",
+ "n": 100,
+ "success": 0.59,
+ "latency_ms_mean": 17.60305565674144,
+ "latency_ms_p95": 26.600089998464682,
+ "teacher_call_fraction": 1.0,
+ "mean_segment_ticks": 0.0,
+ "per_episode": [
+  {
+   "i": 0,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 1,
+   "success": true,
+   "ticks": 499
+  },
+  {
+   "i": 2,
+   "success": true,
+   "ticks": 661
+  },
+  {
+   "i": 3,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 4,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 5,
+   "success": true,
+   "ticks": 632
+  },
+  {
+   "i": 6,
+   "success": true,
+   "ticks": 619
+  },
+  {
+   "i": 7,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 8,
+   "success": true,
+   "ticks": 323
+  },
+  {
+   "i": 9,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 10,
+   "success": true,
+   "ticks": 566
+  },
+  {
+   "i": 11,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 12,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 13,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 14,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 15,
+   "success": true,
+   "ticks": 813
+  },
+  {
+   "i": 16,
+   "success": true,
+   "ticks": 707
+  },
+  {
+   "i": 17,
+   "success": true,
+   "ticks": 394
+  },
+  {
+   "i": 18,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 19,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 20,
+   "success": true,
+   "ticks": 430
+  },
+  {
+   "i": 21,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 22,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 23,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 24,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 25,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 26,
+   "success": true,
+   "ticks": 581
+  },
+  {
+   "i": 27,
+   "success": true,
+   "ticks": 714
+  },
+  {
+   "i": 28,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 29,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 30,
+   "success": true,
+   "ticks": 415
+  },
+  {
+   "i": 31,
+   "success": true,
+   "ticks": 590
+  },
+  {
+   "i": 32,
+   "success": true,
+   "ticks": 456
+  },
+  {
+   "i": 33,
+   "success": true,
+   "ticks": 501
+  },
+  {
+   "i": 34,
+   "success": false,
+   "ticks": 476
+  },
+  {
+   "i": 35,
+   "success": true,
+   "ticks": 813
+  },
+  {
+   "i": 36,
+   "success": true,
+   "ticks": 540
+  },
+  {
+   "i": 37,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 38,
+   "success": true,
+   "ticks": 401
+  },
+  {
+   "i": 39,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 40,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 41,
+   "success": true,
+   "ticks": 585
+  },
+  {
+   "i": 42,
+   "success": true,
+   "ticks": 667
+  },
+  {
+   "i": 43,
+   "success": true,
+   "ticks": 525
+  },
+  {
+   "i": 44,
+   "success": true,
+   "ticks": 447
+  },
+  {
+   "i": 45,
+   "success": true,
+   "ticks": 861
+  },
+  {
+   "i": 46,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 47,
+   "success": true,
+   "ticks": 596
+  },
+  {
+   "i": 48,
+   "success": true,
+   "ticks": 693
+  },
+  {
+   "i": 49,
+   "success": true,
+   "ticks": 700
+  },
+  {
+   "i": 50,
+   "success": true,
+   "ticks": 794
+  },
+  {
+   "i": 51,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 52,
+   "success": true,
+   "ticks": 448
+  },
+  {
+   "i": 53,
+   "success": true,
+   "ticks": 578
+  },
+  {
+   "i": 54,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 55,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 56,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 57,
+   "success": true,
+   "ticks": 390
+  },
+  {
+   "i": 58,
+   "success": true,
+   "ticks": 529
+  },
+  {
+   "i": 59,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 60,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 61,
+   "success": true,
+   "ticks": 566
+  },
+  {
+   "i": 62,
+   "success": true,
+   "ticks": 540
+  },
+  {
+   "i": 63,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 64,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 65,
+   "success": true,
+   "ticks": 459
+  },
+  {
+   "i": 66,
+   "success": true,
+   "ticks": 386
+  },
+  {
+   "i": 67,
+   "success": true,
+   "ticks": 584
+  },
+  {
+   "i": 68,
+   "success": true,
+   "ticks": 520
+  },
+  {
+   "i": 69,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 70,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 71,
+   "success": true,
+   "ticks": 516
+  },
+  {
+   "i": 72,
+   "success": true,
+   "ticks": 526
+  },
+  {
+   "i": 73,
+   "success": true,
+   "ticks": 611
+  },
+  {
+   "i": 74,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 75,
+   "success": true,
+   "ticks": 665
+  },
+  {
+   "i": 76,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 77,
+   "success": true,
+   "ticks": 491
+  },
+  {
+   "i": 78,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 79,
+   "success": true,
+   "ticks": 423
+  },
+  {
+   "i": 80,
+   "success": true,
+   "ticks": 525
+  },
+  {
+   "i": 81,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 82,
+   "success": true,
+   "ticks": 503
+  },
+  {
+   "i": 83,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 84,
+   "success": true,
+   "ticks": 845
+  },
+  {
+   "i": 85,
+   "success": false,
+   "ticks": 934
+  },
+  {
+   "i": 86,
+   "success": true,
+   "ticks": 547
+  },
+  {
+   "i": 87,
+   "success": true,
+   "ticks": 747
+  },
+  {
+   "i": 88,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 89,
+   "success": true,
+   "ticks": 573
+  },
+  {
+   "i": 90,
+   "success": true,
+   "ticks": 593
+  },
+  {
+   "i": 91,
+   "success": true,
+   "ticks": 682
+  },
+  {
+   "i": 92,
+   "success": true,
+   "ticks": 447
+  },
+  {
+   "i": 93,
+   "success": true,
+   "ticks": 610
+  },
+  {
+   "i": 94,
+   "success": true,
+   "ticks": 514
+  },
+  {
+   "i": 95,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 96,
+   "success": true,
+   "ticks": 843
+  },
+  {
+   "i": 97,
+   "success": true,
+   "ticks": 309
+  },
+  {
+   "i": 98,
+   "success": true,
+   "ticks": 572
+  },
+  {
+   "i": 99,
+   "success": true,
+   "ticks": 428
+  }
+ ]
+}

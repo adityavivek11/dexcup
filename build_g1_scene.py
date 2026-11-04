@@ -123,7 +123,9 @@ def build():
     return spec, stand_qpos
 
 
-INSPIRE = Path.home() / "unitree_ros_g1"     # from unitreerobotics/unitree_ros robots/g1_description (3 Nov)
+# Right-hand URDF + meshes copied from unitreerobotics/unitree_ros robots/g1_description (BSD-3-Clause, see
+# assets/unitree_inspire/LICENSE), so a reviewer has nothing extra to download.
+INSPIRE = Path(__file__).parent / "assets" / "unitree_inspire"
 # The 6 motors of the Inspire RH56DFQ. Each finger's second joint is coupled to its first by the URDF's
 # <mimic> tags, which MuJoCo's URDF importer turns into joint equality constraints (thumb: 1.6x and 2.4x).
 INSPIRE_ACTS = ["R_thumb_proximal_yaw_joint", "R_thumb_proximal_pitch_joint", "R_index_proximal_joint",
