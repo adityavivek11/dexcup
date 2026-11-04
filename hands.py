@@ -7,10 +7,10 @@ FINGER_JOINTS  the 7 joint angles that go into the policy observation. Kept at 7
                obs index 14 (= FINGER_JOINTS[3]) must be a finger that closes on the tube: policy.anchor
                reads it to tell an open hand from a closed one.
 FINGER_ACTS    actuators commanded each tick (Dex3: 7, Inspire: 6 motors).
-OPEN / CLOSE   actuator targets for the binary grip (single grip scalar, see CLAUDE.md scope cuts).
+OPEN / CLOSE   actuator targets for the binary grip (single grip scalar).
 FINGER_LINKS   which links count as thumb / opposing fingers in the grasp check (contacts.py).
 OFF, CLEAR     palm (wrist_yaw origin) offset from the tube centre at the grasp, and the sideways clearance
-               for the approach. MEASURED by sweeping test_g1_grasp, never guessed (see CLAUDE.md).
+               for the approach. MEASURED by sweeping test_g1_grasp, never guessed.
 """
 import numpy as np
 from paths import HAND
@@ -74,5 +74,5 @@ else:
     # deadlocked with the tube resting on the coaster 1.4-2.4 cm off centre, hand still, grip probability
     # frozen at 0.52-0.62 (demos released at 0.8-1.3 cm). Success at 0.5/0.6/0.7/0.8/0.9: 7/8/10/8/2 of 12;
     # higher values also delay the grasp close. A calibration of an uncertain decision, NOT a fix of the
-    # teacher's uncertainty (disclosed in CLAUDE.md). Dex3 keeps 0.5.
+    # teacher's uncertainty (disclosed in the README). Dex3 keeps 0.5.
     GRIP_THRESHOLD = 0.7

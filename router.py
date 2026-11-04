@@ -4,7 +4,7 @@ grasp/place, the student otherwise. Plus the random router, the key control.
 WHY a learned phase classifier (not contact sensing)?
   At deployment there is no ground-truth phase. The router may only use what the policy sees (the
   31-d observation). Phase LABELS (from physics rules, gen_demos.label_phases) are used for TRAINING
-  only, never read at test time (CLAUDE.md).
+  only, never read at test time.
 
 WHY the random router must match segment length, not just the call fraction:
   A router that flips teacher/student every tick would be handicapped for a reason unrelated to WHEN it

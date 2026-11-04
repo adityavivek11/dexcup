@@ -31,7 +31,7 @@ ROOT = Path(__file__).parent
 from paths import DATA                  # per-hand workspace files; human geometry stays shared
 CTRL_DT = 0.02
 S_DEFAULT = 0.3                 # horizontal scale: 48/55 clips fit the measured workspace (0.35: 45, 0.5: 22;
-                                # 0.25 fits all but the tube nearly touches the roll). See CLAUDE.md.
+                                # 0.25 fits all but the tube nearly touches the roll).
 GRASP_PAUSE, RELEASE_PAUSE = 0.6, 0.5      # robot fingers need time to close/open (humans do it moving)
 MIN_PHASE = 0.8                 # seconds: floor for retimed scripted segments (servo/IK can't go faster)
 TIME_SCALE = 1.0                # >1 slows the human carry down (robot slower than a human)

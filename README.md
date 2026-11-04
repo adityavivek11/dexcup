@@ -195,7 +195,6 @@ The scripts sit in one folder, one per pipeline stage, grouped here in pipeline 
 ├── sim_env.py                # closed-loop environment with per-call timing
 ├── make_cloud_bundle.py, kaggle/, cloud/, modal_train.py, cloud_train.ipynb   # cloud training
 
-├── CLAUDE.md                 # full lab notebook: every decision, failure and number
 └── requirements.txt          # exact package versions
 ```
 
@@ -355,8 +354,8 @@ method can be applied to other robotic tasks with identifiable delicate phases, 
 
 ## 🤝 Contributing
 
-Issues and pull requests are welcome. The lab notebook `CLAUDE.md` records why each design choice was made;
-please read the relevant part before changing a constant.
+Issues and pull requests are welcome. Code comments record why each design choice was made; please read them
+before changing a constant.
 
 ---
 
