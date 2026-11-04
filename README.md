@@ -11,7 +11,7 @@
 > 76% success at about 3x less estimated compute, compared with 86% success when the teacher runs at every
 > step. A random schedule with the same number of teacher calls reaches only 43%.
 
-📄 **Paper:** [`paper/dexcup_paper.tex`](paper/dexcup_paper.tex) (PDF: [ADD DRIVE LINK]) · 🎥 **Recordings:** [ADD DRIVE LINK] · 🎬 **Demo:** [`demo_router.mp4`](demo_router.mp4)
+📄 **Paper:** [`paper/dexcup_paper.tex`](paper/dexcup_paper.tex) · 🎥 **Recordings:** [Google Drive](https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing) · 🎬 **Demo:** [`demo_router.mp4`](demo_router.mp4)
 
 ---
 
@@ -230,7 +230,7 @@ pip install -r requirements.txt
 
 ## 📊 Dataset
 
-* **Raw recordings (iPhone videos):** [ADD DRIVE LINK]
+* **Raw recordings (iPhone videos):** [Google Drive folder](https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing)
 * **Processed episodes (robot joint and object data, no video):** in `data/`. These are all the evaluation needs.
 
 To record your own data, see [Reproducing from scratch](#reproducing-from-scratch-optional).
