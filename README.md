@@ -408,6 +408,10 @@ keep their own licenses: the G1 model from MuJoCo Menagerie (BSD-3-Clause) and t
 ### What didn't work (and what we learned)
 * **First tag prints:** 0% detection, because the tags were trimmed to the black edge. Tags need a white margin.
 * **cv2.aruco on a curved wrist tag:** missed detections; pupil-apriltags fixed it.
+* **Recording with fast hand movements:** the first batches used slightly faster hand movements, which caused motion
+  blur during the lift and carry, so the wrist tag was lost for long stretches (visible in 79% of frames, median
+  longest tracking gap 0.9 s; one clip had a 6.3 s gap and was rejected). We spotted this when evaluating the clips
+  and moved more slowly in later recordings: wrist-tag visibility rose to 95% and the gap fell to 0.2 s.
 * **Chunk-target bug (teacher v1):** chunks were relative to the wrong reference, so the hand crawled. 0/9.
 * **Behaviour-cloning drift:** fixed with DART noise-injected replays.
 * **Demos that eased to full stops:** created fixed points where a state-based policy hovered forever; fixed by
