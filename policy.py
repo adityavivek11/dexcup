@@ -7,7 +7,7 @@ Observation (state, 31 numbers), all from the robot's own state + object poses (
   palm_pos 3 | cup_pos 3 | cup_up 3 (tube axis: is it tipping?) | coaster_xy 2 | finger_q 7 | arm_q 7 |
   cup - palm 3 | coaster - cup 3
   WHY no "grasped" / contact flags: they come from contact sensing. The router must predict phases from
-  observations only (CLAUDE.md), and the policies shouldn't lean on them either.
+  observations only, and the policies shouldn't lean on them either.
 
 Action, per tick: palm target RELATIVE to an ANCHOR object (3, metres) + grip (1: 1 = fingers closed).
   Anchor = the tube while the hand is open (approach, grasp, retreat), the coaster while it is closed

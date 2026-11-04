@@ -67,7 +67,7 @@ class Env:
         grasped, f = self.gc.is_grasped(d)
         on = np.linalg.norm(cup[:2] - self.coaster[:2]) < 0.03 and up > 0.95 and cup[2] > self.T.CUP_START[2] + 0.01
         # "Released" = NOT grasped by the project's grasp definition (contacts.py: thumb AND index/middle
-        # > 0.5 N). Changed 3 Nov after looking at teacher v3 results (disclosed in CLAUDE.md): the first
+        # > 0.5 N). Changed 3 Nov after looking at teacher v3 results (disclosed in the README): the first
         # version demanded zero finger contact, stricter than both the grasp definition and the replay
         # filter that built the training data, and failed a tube released 0.8 cm from centre whose open
         # fingers were still brushing it.
