@@ -9,7 +9,7 @@
 > 76% success at about 3x less estimated compute, compared with 86% success when the teacher runs at every
 > step. A random schedule with the same number of teacher calls reaches only 43%.
 
-📄 **Paper:** [`paper/dexcup_paper.tex`](paper/dexcup_paper.tex) · 🎥 **Recordings:** [Google Drive](https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing) · 🎬 **Demo:** [`demo_router.mp4`](demo_router.mp4)
+📄 **Paper:** [PDF](https://drive.google.com/file/d/1eiPPhiw6VU9yPI205im1MNwrSYMAurpq/view?usp=sharing) ([LaTeX source](paper/dexcup_paper.tex)) · 🎥 **Recordings:** [Google Drive](https://drive.google.com/drive/folders/1YXQa2ANMMDy-VX6PoyQfnOOrjIQWNeWd?usp=sharing) · 🎬 **Demo:** [`demo_router.mp4`](demo_router.mp4)
 
 ---
 
