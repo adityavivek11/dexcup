@@ -210,7 +210,7 @@ Tested on Windows 11 with conda and Python 3.13; `pip` in a plain virtual enviro
 these in the Miniconda Prompt.
 
 ```bash
-git clone https://github.com/<your-username>/dexcup.git
+git clone https://github.com/adityavivek11/dexcup.git
 cd dexcup
 ```
 
