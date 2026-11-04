@@ -1,0 +1,14 @@
+{
+ "val": [
+  "IMG_8853",
+  "IMG_8861",
+  "IMG_8867",
+  "IMG_8875",
+  "IMG_8897",
+  "IMG_8903",
+  "IMG_8908",
+  "IMG_8915",
+  "IMG_8920"
+ ],
+ "rule": "every 5th successful replay (v1, 2-3 Nov), frozen"
+}

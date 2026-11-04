@@ -1,0 +1,712 @@
+{
+ "agent": "router",
+ "layouts": "random",
+ "n": 100,
+ "success": 0.76,
+ "latency_ms_mean": 6.859705344493355,
+ "latency_ms_p95": 23.993919999986698,
+ "teacher_call_fraction": 0.3202594884796063,
+ "mean_segment_ticks": 14.316666666666666,
+ "per_episode": [
+  {
+   "i": 0,
+   "success": true,
+   "ticks": 542,
+   "teacher_calls": 164,
+   "segments": 7
+  },
+  {
+   "i": 1,
+   "success": true,
+   "ticks": 351,
+   "teacher_calls": 96,
+   "segments": 3
+  },
+  {
+   "i": 2,
+   "success": true,
+   "ticks": 405,
+   "teacher_calls": 101,
+   "segments": 1
+  },
+  {
+   "i": 3,
+   "success": true,
+   "ticks": 581,
+   "teacher_calls": 281,
+   "segments": 2
+  },
+  {
+   "i": 4,
+   "success": true,
+   "ticks": 395,
+   "teacher_calls": 83,
+   "segments": 1
+  },
+  {
+   "i": 5,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 55,
+   "segments": 28
+  },
+  {
+   "i": 6,
+   "success": true,
+   "ticks": 370,
+   "teacher_calls": 92,
+   "segments": 1
+  },
+  {
+   "i": 7,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 809,
+   "segments": 20
+  },
+  {
+   "i": 8,
+   "success": true,
+   "ticks": 500,
+   "teacher_calls": 144,
+   "segments": 4
+  },
+  {
+   "i": 9,
+   "success": true,
+   "ticks": 432,
+   "teacher_calls": 94,
+   "segments": 2
+  },
+  {
+   "i": 10,
+   "success": true,
+   "ticks": 406,
+   "teacher_calls": 143,
+   "segments": 3
+  },
+  {
+   "i": 11,
+   "success": true,
+   "ticks": 336,
+   "teacher_calls": 83,
+   "segments": 1
+  },
+  {
+   "i": 12,
+   "success": true,
+   "ticks": 386,
+   "teacher_calls": 126,
+   "segments": 4
+  },
+  {
+   "i": 13,
+   "success": true,
+   "ticks": 425,
+   "teacher_calls": 131,
+   "segments": 5
+  },
+  {
+   "i": 14,
+   "success": true,
+   "ticks": 317,
+   "teacher_calls": 81,
+   "segments": 1
+  },
+  {
+   "i": 15,
+   "success": false,
+   "ticks": 768,
+   "teacher_calls": 575,
+   "segments": 2
+  },
+  {
+   "i": 16,
+   "success": true,
+   "ticks": 441,
+   "teacher_calls": 131,
+   "segments": 1
+  },
+  {
+   "i": 17,
+   "success": true,
+   "ticks": 354,
+   "teacher_calls": 81,
+   "segments": 1
+  },
+  {
+   "i": 18,
+   "success": true,
+   "ticks": 752,
+   "teacher_calls": 135,
+   "segments": 1
+  },
+  {
+   "i": 19,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 71,
+   "segments": 36
+  },
+  {
+   "i": 20,
+   "success": true,
+   "ticks": 376,
+   "teacher_calls": 182,
+   "segments": 7
+  },
+  {
+   "i": 21,
+   "success": true,
+   "ticks": 364,
+   "teacher_calls": 171,
+   "segments": 5
+  },
+  {
+   "i": 22,
+   "success": true,
+   "ticks": 486,
+   "teacher_calls": 238,
+   "segments": 8
+  },
+  {
+   "i": 23,
+   "success": true,
+   "ticks": 543,
+   "teacher_calls": 291,
+   "segments": 7
+  },
+  {
+   "i": 24,
+   "success": true,
+   "ticks": 808,
+   "teacher_calls": 109,
+   "segments": 2
+  },
+  {
+   "i": 25,
+   "success": true,
+   "ticks": 607,
+   "teacher_calls": 250,
+   "segments": 4
+  },
+  {
+   "i": 26,
+   "success": true,
+   "ticks": 382,
+   "teacher_calls": 73,
+   "segments": 2
+  },
+  {
+   "i": 27,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 196,
+   "segments": 42
+  },
+  {
+   "i": 28,
+   "success": false,
+   "ticks": 361,
+   "teacher_calls": 92,
+   "segments": 4
+  },
+  {
+   "i": 29,
+   "success": true,
+   "ticks": 343,
+   "teacher_calls": 113,
+   "segments": 5
+  },
+  {
+   "i": 30,
+   "success": true,
+   "ticks": 365,
+   "teacher_calls": 100,
+   "segments": 1
+  },
+  {
+   "i": 31,
+   "success": true,
+   "ticks": 425,
+   "teacher_calls": 83,
+   "segments": 1
+  },
+  {
+   "i": 32,
+   "success": true,
+   "ticks": 402,
+   "teacher_calls": 179,
+   "segments": 6
+  },
+  {
+   "i": 33,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 0,
+   "segments": 0
+  },
+  {
+   "i": 34,
+   "success": true,
+   "ticks": 324,
+   "teacher_calls": 192,
+   "segments": 9
+  },
+  {
+   "i": 35,
+   "success": true,
+   "ticks": 286,
+   "teacher_calls": 134,
+   "segments": 2
+  },
+  {
+   "i": 36,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 94,
+   "segments": 27
+  },
+  {
+   "i": 37,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 834,
+   "segments": 1
+  },
+  {
+   "i": 38,
+   "success": true,
+   "ticks": 579,
+   "teacher_calls": 122,
+   "segments": 2
+  },
+  {
+   "i": 39,
+   "success": true,
+   "ticks": 412,
+   "teacher_calls": 151,
+   "segments": 4
+  },
+  {
+   "i": 40,
+   "success": true,
+   "ticks": 478,
+   "teacher_calls": 120,
+   "segments": 2
+  },
+  {
+   "i": 41,
+   "success": true,
+   "ticks": 541,
+   "teacher_calls": 112,
+   "segments": 4
+  },
+  {
+   "i": 42,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 210,
+   "segments": 53
+  },
+  {
+   "i": 43,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 0,
+   "segments": 0
+  },
+  {
+   "i": 44,
+   "success": true,
+   "ticks": 331,
+   "teacher_calls": 78,
+   "segments": 1
+  },
+  {
+   "i": 45,
+   "success": true,
+   "ticks": 473,
+   "teacher_calls": 191,
+   "segments": 2
+  },
+  {
+   "i": 46,
+   "success": true,
+   "ticks": 348,
+   "teacher_calls": 182,
+   "segments": 7
+  },
+  {
+   "i": 47,
+   "success": true,
+   "ticks": 302,
+   "teacher_calls": 94,
+   "segments": 2
+  },
+  {
+   "i": 48,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 136,
+   "segments": 17
+  },
+  {
+   "i": 49,
+   "success": true,
+   "ticks": 353,
+   "teacher_calls": 100,
+   "segments": 2
+  },
+  {
+   "i": 50,
+   "success": true,
+   "ticks": 309,
+   "teacher_calls": 75,
+   "segments": 2
+  },
+  {
+   "i": 51,
+   "success": true,
+   "ticks": 340,
+   "teacher_calls": 85,
+   "segments": 2
+  },
+  {
+   "i": 52,
+   "success": true,
+   "ticks": 478,
+   "teacher_calls": 121,
+   "segments": 1
+  },
+  {
+   "i": 53,
+   "success": true,
+   "ticks": 650,
+   "teacher_calls": 341,
+   "segments": 2
+  },
+  {
+   "i": 54,
+   "success": true,
+   "ticks": 495,
+   "teacher_calls": 136,
+   "segments": 2
+  },
+  {
+   "i": 55,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 813,
+   "segments": 3
+  },
+  {
+   "i": 56,
+   "success": true,
+   "ticks": 444,
+   "teacher_calls": 119,
+   "segments": 1
+  },
+  {
+   "i": 57,
+   "success": true,
+   "ticks": 424,
+   "teacher_calls": 92,
+   "segments": 2
+  },
+  {
+   "i": 58,
+   "success": false,
+   "ticks": 698,
+   "teacher_calls": 439,
+   "segments": 4
+  },
+  {
+   "i": 59,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 108,
+   "segments": 36
+  },
+  {
+   "i": 60,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 382,
+   "segments": 229
+  },
+  {
+   "i": 61,
+   "success": false,
+   "ticks": 202,
+   "teacher_calls": 1,
+   "segments": 1
+  },
+  {
+   "i": 62,
+   "success": true,
+   "ticks": 455,
+   "teacher_calls": 112,
+   "segments": 9
+  },
+  {
+   "i": 63,
+   "success": true,
+   "ticks": 621,
+   "teacher_calls": 180,
+   "segments": 1
+  },
+  {
+   "i": 64,
+   "success": true,
+   "ticks": 334,
+   "teacher_calls": 81,
+   "segments": 1
+  },
+  {
+   "i": 65,
+   "success": true,
+   "ticks": 478,
+   "teacher_calls": 96,
+   "segments": 5
+  },
+  {
+   "i": 66,
+   "success": false,
+   "ticks": 634,
+   "teacher_calls": 457,
+   "segments": 3
+  },
+  {
+   "i": 67,
+   "success": true,
+   "ticks": 372,
+   "teacher_calls": 84,
+   "segments": 2
+  },
+  {
+   "i": 68,
+   "success": true,
+   "ticks": 589,
+   "teacher_calls": 212,
+   "segments": 11
+  },
+  {
+   "i": 69,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 714,
+   "segments": 2
+  },
+  {
+   "i": 70,
+   "success": true,
+   "ticks": 331,
+   "teacher_calls": 88,
+   "segments": 2
+  },
+  {
+   "i": 71,
+   "success": true,
+   "ticks": 497,
+   "teacher_calls": 154,
+   "segments": 3
+  },
+  {
+   "i": 72,
+   "success": true,
+   "ticks": 358,
+   "teacher_calls": 117,
+   "segments": 4
+  },
+  {
+   "i": 73,
+   "success": true,
+   "ticks": 402,
+   "teacher_calls": 105,
+   "segments": 1
+  },
+  {
+   "i": 74,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 126,
+   "segments": 63
+  },
+  {
+   "i": 75,
+   "success": true,
+   "ticks": 429,
+   "teacher_calls": 94,
+   "segments": 1
+  },
+  {
+   "i": 76,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 756,
+   "segments": 53
+  },
+  {
+   "i": 77,
+   "success": true,
+   "ticks": 318,
+   "teacher_calls": 74,
+   "segments": 1
+  },
+  {
+   "i": 78,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 205,
+   "segments": 68
+  },
+  {
+   "i": 79,
+   "success": true,
+   "ticks": 434,
+   "teacher_calls": 96,
+   "segments": 1
+  },
+  {
+   "i": 80,
+   "success": true,
+   "ticks": 345,
+   "teacher_calls": 75,
+   "segments": 1
+  },
+  {
+   "i": 81,
+   "success": true,
+   "ticks": 470,
+   "teacher_calls": 84,
+   "segments": 1
+  },
+  {
+   "i": 82,
+   "success": true,
+   "ticks": 683,
+   "teacher_calls": 197,
+   "segments": 1
+  },
+  {
+   "i": 83,
+   "success": true,
+   "ticks": 302,
+   "teacher_calls": 76,
+   "segments": 1
+  },
+  {
+   "i": 84,
+   "success": true,
+   "ticks": 391,
+   "teacher_calls": 102,
+   "segments": 1
+  },
+  {
+   "i": 85,
+   "success": true,
+   "ticks": 352,
+   "teacher_calls": 184,
+   "segments": 7
+  },
+  {
+   "i": 86,
+   "success": true,
+   "ticks": 261,
+   "teacher_calls": 91,
+   "segments": 3
+  },
+  {
+   "i": 87,
+   "success": true,
+   "ticks": 346,
+   "teacher_calls": 99,
+   "segments": 3
+  },
+  {
+   "i": 88,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 391,
+   "segments": 283
+  },
+  {
+   "i": 89,
+   "success": true,
+   "ticks": 347,
+   "teacher_calls": 77,
+   "segments": 2
+  },
+  {
+   "i": 90,
+   "success": true,
+   "ticks": 399,
+   "teacher_calls": 153,
+   "segments": 4
+  },
+  {
+   "i": 91,
+   "success": true,
+   "ticks": 407,
+   "teacher_calls": 131,
+   "segments": 2
+  },
+  {
+   "i": 92,
+   "success": true,
+   "ticks": 367,
+   "teacher_calls": 159,
+   "segments": 7
+  },
+  {
+   "i": 93,
+   "success": true,
+   "ticks": 425,
+   "teacher_calls": 147,
+   "segments": 5
+  },
+  {
+   "i": 94,
+   "success": true,
+   "ticks": 361,
+   "teacher_calls": 93,
+   "segments": 2
+  },
+  {
+   "i": 95,
+   "success": true,
+   "ticks": 317,
+   "teacher_calls": 91,
+   "segments": 3
+  },
+  {
+   "i": 96,
+   "success": true,
+   "ticks": 306,
+   "teacher_calls": 71,
+   "segments": 1
+  },
+  {
+   "i": 97,
+   "success": true,
+   "ticks": 344,
+   "teacher_calls": 102,
+   "segments": 1
+  },
+  {
+   "i": 98,
+   "success": true,
+   "ticks": 279,
+   "teacher_calls": 91,
+   "segments": 3
+  },
+  {
+   "i": 99,
+   "success": false,
+   "ticks": 1000,
+   "teacher_calls": 0,
+   "segments": 0
+  }
+ ]
+}

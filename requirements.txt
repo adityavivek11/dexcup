@@ -1,10 +1,10 @@
-mujoco>=3.2
-numpy
-scipy                # smoothing in retarget.py
-pillow
-imageio
-imageio-ffmpeg
-opencv-python>=4.8   # calibration, PnP, video decoding
-pupil-apriltags      # AprilTag detection (more robust than cv2.aruco on the wrist tag)
-# training (later stages); on Apple Silicon this includes the MPS GPU backend
-torch
+# Exact versions the results were produced with (Python 3.13).
+mujoco==3.17.0
+numpy==2.2.5
+scipy==1.15.2                  # smoothing in retarget.py
+pillow==11.3.0
+imageio==2.38.1
+imageio-ffmpeg==0.8.0          # video output
+opencv-python==5.0.0.93        # calibration, PnP, video decoding
+pupil-apriltags==1.0.4.post11  # AprilTag detection (more robust than cv2.aruco on the wrist tag)
+torch==2.14.1

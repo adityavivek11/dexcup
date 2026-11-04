@@ -1,0 +1,512 @@
+{
+ "agent": "student",
+ "layouts": "random",
+ "n": 100,
+ "success": 0.16,
+ "latency_ms_mean": 0.6580289803612308,
+ "latency_ms_p95": 0.971899999967718,
+ "teacher_call_fraction": 0.0,
+ "mean_segment_ticks": 0.0,
+ "per_episode": [
+  {
+   "i": 0,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 1,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 2,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 3,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 4,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 5,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 6,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 7,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 8,
+   "success": true,
+   "ticks": 479
+  },
+  {
+   "i": 9,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 10,
+   "success": true,
+   "ticks": 516
+  },
+  {
+   "i": 11,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 12,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 13,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 14,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 15,
+   "success": false,
+   "ticks": 430
+  },
+  {
+   "i": 16,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 17,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 18,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 19,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 20,
+   "success": true,
+   "ticks": 529
+  },
+  {
+   "i": 21,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 22,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 23,
+   "success": true,
+   "ticks": 789
+  },
+  {
+   "i": 24,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 25,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 26,
+   "success": true,
+   "ticks": 423
+  },
+  {
+   "i": 27,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 28,
+   "success": false,
+   "ticks": 264
+  },
+  {
+   "i": 29,
+   "success": true,
+   "ticks": 529
+  },
+  {
+   "i": 30,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 31,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 32,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 33,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 34,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 35,
+   "success": true,
+   "ticks": 275
+  },
+  {
+   "i": 36,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 37,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 38,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 39,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 40,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 41,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 42,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 43,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 44,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 45,
+   "success": true,
+   "ticks": 848
+  },
+  {
+   "i": 46,
+   "success": true,
+   "ticks": 705
+  },
+  {
+   "i": 47,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 48,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 49,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 50,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 51,
+   "success": true,
+   "ticks": 561
+  },
+  {
+   "i": 52,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 53,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 54,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 55,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 56,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 57,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 58,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 59,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 60,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 61,
+   "success": false,
+   "ticks": 213
+  },
+  {
+   "i": 62,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 63,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 64,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 65,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 66,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 67,
+   "success": false,
+   "ticks": 534
+  },
+  {
+   "i": 68,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 69,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 70,
+   "success": true,
+   "ticks": 383
+  },
+  {
+   "i": 71,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 72,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 73,
+   "success": true,
+   "ticks": 914
+  },
+  {
+   "i": 74,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 75,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 76,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 77,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 78,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 79,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 80,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 81,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 82,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 83,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 84,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 85,
+   "success": true,
+   "ticks": 939
+  },
+  {
+   "i": 86,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 87,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 88,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 89,
+   "success": true,
+   "ticks": 373
+  },
+  {
+   "i": 90,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 91,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 92,
+   "success": true,
+   "ticks": 558
+  },
+  {
+   "i": 93,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 94,
+   "success": true,
+   "ticks": 427
+  },
+  {
+   "i": 95,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 96,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 97,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 98,
+   "success": false,
+   "ticks": 1000
+  },
+  {
+   "i": 99,
+   "success": false,
+   "ticks": 1000
+  }
+ ]
+}

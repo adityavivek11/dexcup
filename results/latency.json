@@ -1,0 +1,19 @@
+{
+ "machine": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+ "calls": 3000,
+ "teacher": {
+  "mean_ms": 7.97291599996485,
+  "p95_ms": 10.399055002199006,
+  "params": 7391236
+ },
+ "student": {
+  "mean_ms": 0.05489980001584627,
+  "p95_ms": 0.06470499793067572,
+  "params": 28864
+ },
+ "phase": {
+  "mean_ms": 0.05080323336975804,
+  "p95_ms": 0.07680000271648169,
+  "params": 6533
+ }
+}
