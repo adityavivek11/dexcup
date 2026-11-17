@@ -420,6 +420,13 @@ keep their own licenses: the G1 model from MuJoCo Menagerie (BSD-3-Clause) and t
 * **One-step student with velocity inputs:** learned "next move = current velocity" (the copycat problem) and
   its targets ran away to metres within 10 ticks.
 * **Router before router-DAgger:** 42% vs random 37%, not significant. The student was the bottleneck.
+* **ACT's CVAE in the teacher:** a latent "style" z, learned from the demo's next
+  actions and set to 0 at run time, meant to stop behaviour cloning from averaging different ways of doing the
+  same step. On the same 100 test layouts it never beat the plain teacher (86%). At KL weight β = 10 and β = 1,
+  z collapsed (KL → 0, so the model ignored it): 65% and 82%. At β = 0.1, z was used, and success fell to 2% (98
+  timeouts), probably because z = 0 at run time no longer matched the z values seen in training. Lesson: our
+  demos hold almost no hidden style for z to capture. It also showed us how much a single training run varies: the two collapsed runs are effectively
+  the same model as the plain teacher, yet scored 82% and 65%, so our 86% teacher is likely an above-average run.
 * **Infrastructure:** a cross-validation run was lost when the laptop slept; a Colab GPU quota ran out. We
   moved to Kaggle (outputs persist) and added per-round checkpoints with resume.
 
