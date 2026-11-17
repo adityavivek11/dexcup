@@ -461,12 +461,9 @@ a law; see the caveats in [Results](#-results--benchmarks).
 * **Latency measured on the development laptop's CPU**, not on robot hardware.
 
 ### Future work
-* Image-based teacher; real-robot test; other tasks.
-* The generic-dataset ablation (planned, not done).
-* A controlled hand comparison: the same Inspire hand with two fingers disabled vs all five, everything else
-  identical.
-* Fix the Inspire teacher's grip uncertainty with more varied release positions in the data, instead of a
-  threshold.
+* **A VLA built on this architecture:** a vision-language-action model as the teacher, called only in the
+  phases that need it, with a small fast student and the same router handling the rest. The bigger and slower
+  the teacher, the more the router saves.
 
 ---
 
